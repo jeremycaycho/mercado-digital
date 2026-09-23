@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
+import IconoRubro from '../components/IconoRubro'
 import { ubicacion, estadoDeHoy } from '../utils/formato'
 
 function EstadoHoy({ puesto }) {
@@ -93,6 +94,7 @@ export default function Inicio() {
                 estado={r.estado}
                 foto_url={r.foto_url}
                 updated_at={r.updated_at}
+                rubro={r.rubro}
                 whatsapp={r.whatsapp}
                 puesto={{
                   id: r.puesto_id,
@@ -112,6 +114,11 @@ export default function Inicio() {
             {puestos.map((p) => (
               <li key={p.id}>
                 <Link to={`/puesto/${p.id}`} className="puesto-fila">
+                  {p.foto_url ? (
+                    <img className="puesto-mini" src={p.foto_url} alt="" loading="lazy" />
+                  ) : (
+                    <IconoRubro rubro={p.rubro} className="puesto-mini" />
+                  )}
                   <span className="puesto-rubro">
                     {p.rubro}
                     <EstadoHoy puesto={p} />

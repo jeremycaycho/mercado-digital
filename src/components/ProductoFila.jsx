@@ -1,13 +1,18 @@
 import { Link } from 'react-router-dom'
+import IconoRubro from './IconoRubro'
 import { formatoPrecio, ubicacion, linkWhatsApp, ESTADOS, haceCuanto, esAntiguo } from '../utils/formato'
 
-export default function ProductoFila({ nombre, precio, unidad, estado, foto_url, updated_at, puesto, whatsapp }) {
+export default function ProductoFila({ nombre, precio, unidad, estado, foto_url, updated_at, rubro, puesto, whatsapp }) {
   const est = ESTADOS[estado] ?? ESTADOS.disponible
   const wa = linkWhatsApp(whatsapp, `Hola, vi en Mercado Digital que tienes ${nombre}. ¿Aún hay?`)
 
   return (
     <li className={`producto ${estado === 'agotado' ? 'producto-agotado' : ''}`}>
-      {foto_url && <img className="producto-foto" src={foto_url} alt={nombre} loading="lazy" />}
+      {foto_url ? (
+        <img className="producto-foto" src={foto_url} alt={nombre} loading="lazy" />
+      ) : (
+        <IconoRubro rubro={rubro} className="producto-foto" />
+      )}
       <div className="producto-info">
         <h3 className="producto-nombre">{nombre}</h3>
         <span className={`estado ${est.clase}`}>{est.texto}</span>

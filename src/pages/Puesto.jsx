@@ -91,7 +91,7 @@ export default function Puesto() {
       <h2 className="subtitulo">{productos.length} productos</h2>
       <ul className="lista">
         {productos.map((p) => (
-          <ProductoFila key={p.id} {...p} whatsapp={puesto.whatsapp} />
+          <ProductoFila key={p.id} {...p} rubro={puesto.rubro} whatsapp={puesto.whatsapp} />
         ))}
       </ul>
 

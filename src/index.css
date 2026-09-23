@@ -482,3 +482,23 @@ button.foto-miniatura { background: #fff; padding: 0; }
 .puesto-datos div { display: grid; grid-template-columns: 80px 1fr; gap: 8px; align-items: center; }
 .puesto-datos dt { color: var(--gris); font-size: 15px; }
 .puesto-datos dd { margin: 0; }
+
+/* ===== Paso 8: imágenes por defecto por rubro ===== */
+.icono-rubro { display: grid; place-items: center; }
+.icono-rubro svg { width: 60%; height: 60%; }
+
+/* Lista de puestos con miniatura */
+.puesto-fila { grid-template-columns: 56px 1fr auto; }
+.puesto-mini {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  align-self: center;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.puesto-fila .puesto-rubro { grid-column: 2 / -1; }
+.puesto-fila .puesto-nombre,
+.puesto-fila .puesto-ubicacion { grid-column: 2; }
+.puesto-fila .puesto-conteo { grid-column: 3; }
