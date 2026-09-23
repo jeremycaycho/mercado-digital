@@ -5,6 +5,7 @@ import { supabase } from '../supabaseClient'
 import { ubicacion, estadoDeHoy, hoyLima } from '../utils/formato'
 import CapturaFoto from '../components/CapturaFoto'
 import EditarPuesto from '../components/EditarPuesto'
+import MiQR from '../components/MiQR'
 import CrearPuesto from '../components/CrearPuesto'
 import NuevoProducto from '../components/NuevoProducto'
 import ProductoEditable from '../components/ProductoEditable'
@@ -19,13 +20,14 @@ export default function Panel({ usuario }) {
   const [aviso, setAviso] = useState(null)
   const [toast, setToast] = useState(null)
   const [editando, setEditando] = useState(false)
+  const [verQR, setVerQR] = useState(false)
   const avisar = (texto) => setToast({ texto, id: Date.now() })
   const cerrarToast = useCallback(() => setToast(null), [])
 
   const cargar = useCallback(async () => {
     const { data, error } = await supabase
       .from('puestos')
-      .select('*, productos(*)')
+      .select('*, mercados(nombre), productos(*)')
       .eq('owner_id', usuario.id)
       .limit(1)
       .maybeSingle()
@@ -127,6 +129,7 @@ export default function Panel({ usuario }) {
         <p className="cabecera-sub">{ubicacion(puesto)}</p>
         <div className="cabecera-acciones">
           <Link to={`/puesto/${puesto.id}`} className="enlace-claro">Ver como cliente</Link>
+          <button className="enlace-claro" onClick={() => setVerQR(true)}>Mi QR</button>
           <button className="enlace-claro" onClick={salir}>Salir</button>
         </div>
       </header>
@@ -194,6 +197,8 @@ export default function Panel({ usuario }) {
           />
         ))}
       </ul>
+
+      {verQR && <MiQR puesto={puesto} onCerrar={() => setVerQR(false)} />}
 
       <Toast mensaje={toast} onCerrar={cerrarToast} />
     </main>
