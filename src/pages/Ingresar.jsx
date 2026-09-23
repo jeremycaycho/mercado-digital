@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import { traducirError } from '../utils/errores'
 
-function traducir(mensaje) {
-  if (mensaje.includes('Invalid login credentials')) return 'Correo o contraseña incorrectos.'
-  if (mensaje.includes('already registered')) return 'Ese correo ya tiene cuenta. Ingresa con tu contraseña.'
-  if (mensaje.includes('at least 6')) return 'La contraseña debe tener al menos 6 caracteres.'
-  if (mensaje.includes('Email not confirmed')) return 'Tu correo aún no está confirmado. Revisa tu bandeja de entrada.'
-  return mensaje
+const TITULOS = {
+  ingresar: 'Ingresa a tu puesto',
+  crear: 'Crea tu cuenta',
+  recuperar: 'Recupera tu contraseña',
 }
 
 export default function Ingresar() {
@@ -17,55 +16,99 @@ export default function Ingresar() {
   const [mensaje, setMensaje] = useState(null)
   const [enviando, setEnviando] = useState(false)
 
+  const cambiarModo = (nuevo) => {
+    setModo(nuevo)
+    setMensaje(null)
+    setClave('')
+  }
+
   async function enviar(e) {
     e.preventDefault()
     setEnviando(true)
     setMensaje(null)
-    const { data, error } =
-      modo === 'ingresar'
-        ? await supabase.auth.signInWithPassword({ email, password: clave })
-        : await supabase.auth.signUp({ email, password: clave })
+    const origen = window.location.origin
 
-    if (error) setMensaje({ tipo: 'error', texto: traducir(error.message) })
-    else if (modo === 'crear' && !data.session)
-      setMensaje({ tipo: 'ok', texto: 'Cuenta creada. Confirma tu correo desde el mensaje que te enviamos y luego ingresa.' })
+    if (modo === 'ingresar') {
+      const { error } = await supabase.auth.signInWithPassword({ email, password: clave })
+      if (error) setMensaje({ tipo: 'error', texto: traducirError(error.message) })
+    }
+
+    if (modo === 'crear') {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password: clave,
+        options: { emailRedirectTo: `${origen}/vendedor` },
+      })
+      if (error) setMensaje({ tipo: 'error', texto: traducirError(error.message) })
+      else if (!data.session)
+        setMensaje({
+          tipo: 'ok',
+          texto: `Te enviamos un correo a ${email}. Ábrelo y toca "Confirmar mi cuenta" para empezar. Si no lo ves, revisa la carpeta de spam.`,
+        })
+    }
+
+    if (modo === 'recuperar') {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origen}/vendedor/nueva-clave`,
+      })
+      // Por seguridad no se dice si el correo existe o no
+      if (error) setMensaje({ tipo: 'error', texto: traducirError(error.message) })
+      else
+        setMensaje({
+          tipo: 'ok',
+          texto: `Si ${email} tiene una cuenta, te llegará un correo con un enlace para crear una nueva contraseña. Revisa también la carpeta de spam.`,
+        })
+    }
+
     setEnviando(false)
   }
+
+  const textoBoton = { ingresar: 'Ingresar', crear: 'Crear cuenta', recuperar: 'Enviar enlace' }[modo]
 
   return (
     <main className="pagina">
       <header className="cabecera">
         <p className="mercado-nombre">Mercado Digital para vendedores</p>
-        <h1>{modo === 'ingresar' ? 'Ingresa a tu puesto' : 'Crea tu cuenta'}</h1>
+        <h1>{TITULOS[modo]}</h1>
       </header>
 
       <form className="formulario" onSubmit={enviar}>
+        {modo === 'recuperar' && (
+          <p className="sin-margen">Escribe el correo con el que te registraste y te enviaremos un enlace.</p>
+        )}
         <label>
           Correo
-          <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value.trim())} required />
         </label>
-        <label>
-          Contraseña
-          <input
-            type="password"
-            autoComplete={modo === 'ingresar' ? 'current-password' : 'new-password'}
-            minLength={6}
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-            required
-          />
-        </label>
+        {modo !== 'recuperar' && (
+          <label>
+            Contraseña
+            <input
+              type="password"
+              autoComplete={modo === 'ingresar' ? 'current-password' : 'new-password'}
+              minLength={modo === 'crear' ? 8 : undefined}
+              value={clave}
+              onChange={(e) => setClave(e.target.value)}
+              required
+            />
+            {modo === 'crear' && <span className="nota sin-margen">Mínimo 8 caracteres.</span>}
+          </label>
+        )}
         {mensaje && <p className={mensaje.tipo === 'error' ? 'aviso-error' : 'aviso-ok'}>{mensaje.texto}</p>}
-        <button className="btn-principal" disabled={enviando}>
-          {enviando ? 'Un momento…' : modo === 'ingresar' ? 'Ingresar' : 'Crear cuenta'}
-        </button>
+        <button className="btn-principal" disabled={enviando}>{enviando ? 'Un momento…' : textoBoton}</button>
+        {modo === 'ingresar' && (
+          <button type="button" className="enlace" onClick={() => cambiarModo('recuperar')}>
+            Olvidé mi contraseña
+          </button>
+        )}
       </form>
 
       <p className="pie">
-        {modo === 'ingresar' ? '¿Aún no tienes cuenta? ' : '¿Ya tienes cuenta? '}
-        <button className="enlace" onClick={() => { setModo(modo === 'ingresar' ? 'crear' : 'ingresar'); setMensaje(null) }}>
-          {modo === 'ingresar' ? 'Crear cuenta' : 'Ingresar'}
-        </button>
+        {modo === 'ingresar' ? (
+          <>¿Aún no tienes cuenta? <button className="enlace" onClick={() => cambiarModo('crear')}>Crear cuenta</button></>
+        ) : (
+          <>¿Ya tienes cuenta? <button className="enlace" onClick={() => cambiarModo('ingresar')}>Ingresar</button></>
+        )}
       </p>
       <p className="pie"><Link to="/">Volver al buscador</Link></p>
     </main>

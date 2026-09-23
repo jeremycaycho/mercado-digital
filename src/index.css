@@ -517,3 +517,6 @@ button.foto-miniatura { background: #fff; padding: 0; }
 a.btn-principal { color: #fff; }
 .confirmar-caja .enlace { justify-self: center; padding: 6px; }
 .confirmar-caja .aviso-ok { overflow-wrap: anywhere; }
+
+/* ===== Paso 11: acceso ===== */
+.formulario > .enlace { justify-self: center; padding: 6px; }
