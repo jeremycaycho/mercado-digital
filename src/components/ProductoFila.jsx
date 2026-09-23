@@ -20,6 +20,7 @@ export default function ProductoFila({ nombre, precio, unidad, estado, foto_url,
           <Link to={`/puesto/${puesto.id}`} className="producto-puesto">
             <span className="producto-puesto-nombre">{puesto.nombre}</span>
             <span className="producto-puesto-donde">{ubicacion(puesto)}</span>
+            {puesto.cerradoHoy && <span className="producto-puesto-cerrado">Este puesto cerró hoy</span>}
           </Link>
         )}
       </div>

@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from 'react'
 import Toast from '../components/Toast'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { ubicacion } from '../utils/formato'
+import { ubicacion, estadoDeHoy, hoyLima } from '../utils/formato'
+import CapturaFoto from '../components/CapturaFoto'
+import EditarPuesto from '../components/EditarPuesto'
 import CrearPuesto from '../components/CrearPuesto'
 import NuevoProducto from '../components/NuevoProducto'
 import ProductoEditable from '../components/ProductoEditable'
@@ -16,6 +18,7 @@ export default function Panel({ usuario }) {
   const [estado, setEstado] = useState('cargando')
   const [aviso, setAviso] = useState(null)
   const [toast, setToast] = useState(null)
+  const [editando, setEditando] = useState(false)
   const avisar = (texto) => setToast({ texto, id: Date.now() })
   const cerrarToast = useCallback(() => setToast(null), [])
 
@@ -51,6 +54,26 @@ export default function Panel({ usuario }) {
     else if (cambios.estado) avisar(`Marcado como "${{ disponible: 'Hay', pocos: 'Pocos', agotado: 'Agotado' }[cambios.estado]}"`)
     return true
   }
+
+  async function actualizarPuesto(cambios, mensaje = 'Datos del puesto guardados') {
+    const anterior = puesto
+    setPuesto((p) => ({ ...p, ...cambios }))
+    const { error } = await supabase.from('puestos').update(cambios).eq('id', puesto.id)
+    if (error) {
+      setPuesto(anterior)
+      setAviso('No se guardó el cambio del puesto. Revisa tu conexión e intenta de nuevo.')
+      return false
+    }
+    setAviso(null)
+    avisar(mensaje)
+    return true
+  }
+
+  const marcarHoy = (valor) =>
+    actualizarPuesto(
+      { estado_hoy: valor, estado_hoy_fecha: hoyLima() },
+      valor === 'abierto' ? 'Marcado: abierto hoy' : 'Marcado: cerrado hoy'
+    )
 
   async function agregar(nuevo) {
     const { data, error } = await supabase
@@ -94,6 +117,8 @@ export default function Panel({ usuario }) {
 
   if (estado === 'sinpuesto') return <CrearPuesto usuario={usuario} onCreado={cargar} onSalir={salir} />
 
+  const hoy = estadoDeHoy(puesto)
+
   return (
     <main className="pagina">
       <header className="cabecera">
@@ -107,6 +132,52 @@ export default function Panel({ usuario }) {
       </header>
 
       {aviso && <p className="aviso-error">{aviso}</p>}
+
+      <section>
+        <h2 className="subtitulo">¿Tu puesto abre hoy?</h2>
+        <div className="selector-estado" role="group" aria-label="Estado del puesto hoy">
+          <button
+            className={`opcion opcion-disponible ${hoy === 'abierto' ? 'activa' : ''}`}
+            aria-pressed={hoy === 'abierto'}
+            onClick={() => hoy !== 'abierto' && marcarHoy('abierto')}
+          >
+            Abierto hoy
+          </button>
+          <button
+            className={`opcion opcion-agotado ${hoy === 'cerrado' ? 'activa' : ''}`}
+            aria-pressed={hoy === 'cerrado'}
+            onClick={() => hoy !== 'cerrado' && marcarHoy('cerrado')}
+          >
+            Cerrado hoy
+          </button>
+        </div>
+        {!hoy && <p className="nota">Aún no marcas si abres hoy. Tus clientes lo verán en tu página.</p>}
+      </section>
+
+      {editando ? (
+        <EditarPuesto puesto={puesto} onGuardar={(cambios) => actualizarPuesto(cambios)} onCerrar={() => setEditando(false)} />
+      ) : (
+        <section className="perfil-resumen">
+          <CapturaFoto
+            className="foto-puesto-editar"
+            titulo="Foto de tu puesto"
+            fotoActual={puesto.foto_url}
+            usuarioId={usuario.id}
+            onGuardar={(url) => actualizarPuesto({ foto_url: url }, 'Foto del puesto guardada')}
+            onError={setAviso}
+            etiqueta={puesto.foto_url ? 'Cambiar foto del puesto' : 'Tomar foto del puesto'}
+          >
+            {puesto.foto_url ? <img src={puesto.foto_url} alt="" /> : <span>Foto del puesto</span>}
+          </CapturaFoto>
+          <div className="perfil-datos">
+            <p>{puesto.horario || <span className="falta">Sin horario</span>}</p>
+            <p>
+              {puesto.metodos_pago?.length ? puesto.metodos_pago.join(', ') : <span className="falta">Sin métodos de pago</span>}
+            </p>
+            <button className="enlace" onClick={() => setEditando(true)}>Editar datos del puesto</button>
+          </div>
+        </section>
+      )}
 
       <NuevoProducto onAgregar={agregar} />
 

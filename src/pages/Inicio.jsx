@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
-import { ubicacion } from '../utils/formato'
+import { ubicacion, estadoDeHoy } from '../utils/formato'
+
+function EstadoHoy({ puesto }) {
+  const hoy = estadoDeHoy(puesto)
+  if (!hoy) return null
+  return <span className={`badge-hoy badge-${hoy}`}>{hoy === 'abierto' ? 'Abierto hoy' : 'Cerrado hoy'}</span>
+}
 
 export default function Inicio() {
   const [termino, setTermino] = useState('')
@@ -15,7 +21,7 @@ export default function Inicio() {
   useEffect(() => {
     supabase
       .from('puestos')
-      .select('id, nombre, rubro, pasillo, numero_puesto, productos(count)')
+      .select('id, nombre, rubro, pasillo, numero_puesto, foto_url, estado_hoy, estado_hoy_fecha, productos(count)')
       .eq('activo', true)
       .order('nombre')
       .then(({ data, error }) => {
@@ -93,6 +99,7 @@ export default function Inicio() {
                   nombre: r.puesto,
                   pasillo: r.pasillo,
                   numero_puesto: r.numero_puesto,
+                  cerradoHoy: r.cerrado_hoy,
                 }}
               />
             ))}
@@ -105,7 +112,10 @@ export default function Inicio() {
             {puestos.map((p) => (
               <li key={p.id}>
                 <Link to={`/puesto/${p.id}`} className="puesto-fila">
-                  <span className="puesto-rubro">{p.rubro}</span>
+                  <span className="puesto-rubro">
+                    {p.rubro}
+                    <EstadoHoy puesto={p} />
+                  </span>
                   <span className="puesto-nombre">{p.nombre}</span>
                   <span className="puesto-ubicacion">{ubicacion(p)}</span>
                   <span className="puesto-conteo">{p.productos?.[0]?.count ?? 0} productos</span>
