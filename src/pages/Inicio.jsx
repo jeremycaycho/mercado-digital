@@ -86,6 +86,7 @@ export default function Inicio() {
                 unidad={r.unidad}
                 estado={r.estado}
                 foto_url={r.foto_url}
+                updated_at={r.updated_at}
                 whatsapp={r.whatsapp}
                 puesto={{
                   id: r.puesto_id,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { comprimirImagen, subirFoto, borrarFoto } from '../utils/fotos'
 import CamaraModal, { camaraDisponible } from './CamaraModal'
+import { haceCuanto, esAntiguo } from '../utils/formato'
 
 const OPCIONES = [
   ['disponible', 'Hay'],
@@ -105,7 +106,12 @@ export default function ProductoEditable({ producto, usuarioId, onCambiar, onEli
             <EntradaCamara onFoto={fotoDelSistema} disabled={subiendo} etiqueta={etiquetaFoto} />
           </label>
         )}
-        <h3 className="producto-nombre">{producto.nombre}</h3>
+        <div className="editable-titulo">
+          <h3 className="producto-nombre">{producto.nombre}</h3>
+          <span className={`actualizado ${esAntiguo(producto.updated_at) ? 'actualizado-antiguo' : ''}`}>
+            Actualizado {haceCuanto(producto.updated_at)}
+          </span>
+        </div>
         <button className="btn-eliminar" onClick={onEliminar} aria-label={`Eliminar ${producto.nombre}`}>
           Eliminar
         </button>

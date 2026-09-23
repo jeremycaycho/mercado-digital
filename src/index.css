@@ -363,3 +363,36 @@ label.btn-secundario:focus-within { outline: 3px solid var(--tinta); outline-off
 /* Cámara dentro de la app */
 button.foto-miniatura { background: #fff; padding: 0; }
 .camara-video { display: block; background: var(--tinta); }
+
+/* ===== Paso 6: actualizado y confirmaciones ===== */
+.actualizado { display: block; font-size: 13px; color: var(--gris); }
+.actualizado-antiguo { color: var(--ambar); font-weight: 700; }
+.editable-titulo { flex: 1; min-width: 0; }
+
+.toast-zona {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.toast {
+  margin: 0 16px;
+  padding: 12px 18px;
+  background: var(--tinta);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--cartulina);
+  animation: toast-entra 0.2s ease-out;
+}
+@keyframes toast-entra {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+}

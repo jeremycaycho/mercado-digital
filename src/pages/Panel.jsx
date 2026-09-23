@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import Toast from '../components/Toast'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { ubicacion } from '../utils/formato'
@@ -14,6 +15,9 @@ export default function Panel({ usuario }) {
   const [productos, setProductos] = useState([])
   const [estado, setEstado] = useState('cargando')
   const [aviso, setAviso] = useState(null)
+  const [toast, setToast] = useState(null)
+  const avisar = (texto) => setToast({ texto, id: Date.now() })
+  const cerrarToast = useCallback(() => setToast(null), [])
 
   const cargar = useCallback(async () => {
     const { data, error } = await supabase
@@ -33,7 +37,8 @@ export default function Panel({ usuario }) {
 
   async function actualizar(id, cambios) {
     const anterior = productos
-    setProductos((lista) => lista.map((p) => (p.id === id ? { ...p, ...cambios } : p)))
+    const ahora = new Date().toISOString()
+    setProductos((lista) => lista.map((p) => (p.id === id ? { ...p, ...cambios, updated_at: ahora } : p)))
     const { error } = await supabase.from('productos').update(cambios).eq('id', id)
     if (error) {
       setProductos(anterior)
@@ -41,6 +46,9 @@ export default function Panel({ usuario }) {
       return false
     }
     setAviso(null)
+    if ('foto_url' in cambios) avisar('Foto guardada')
+    else if ('precio' in cambios) avisar('Precio guardado')
+    else if (cambios.estado) avisar(`Marcado como "${{ disponible: 'Hay', pocos: 'Pocos', agotado: 'Agotado' }[cambios.estado]}"`)
     return true
   }
 
@@ -56,6 +64,7 @@ export default function Panel({ usuario }) {
     }
     setProductos((lista) => [...lista, data].sort(porNombre))
     setAviso(null)
+    avisar('Producto agregado')
     return true
   }
 
@@ -66,6 +75,7 @@ export default function Panel({ usuario }) {
     else {
       setProductos((lista) => lista.filter((p) => p.id !== producto.id))
       borrarFoto(producto.foto_url)
+      avisar('Producto eliminado')
     }
   }
 
@@ -113,6 +123,8 @@ export default function Panel({ usuario }) {
           />
         ))}
       </ul>
+
+      <Toast mensaje={toast} onCerrar={cerrarToast} />
     </main>
   )
 }
