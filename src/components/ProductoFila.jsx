@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import IconoRubro from './IconoRubro'
+import InsigniaVerificado from './InsigniaVerificado'
 import { formatoPrecio, ubicacion, linkWhatsApp, ESTADOS, haceCuanto, esAntiguo } from '../utils/formato'
 
 export default function ProductoFila({ nombre, precio, unidad, estado, foto_url, updated_at, rubro, puesto, whatsapp }) {
@@ -24,6 +25,7 @@ export default function ProductoFila({ nombre, precio, unidad, estado, foto_url,
         {puesto && (
           <Link to={`/puesto/${puesto.id}`} className="producto-puesto">
             <span className="producto-puesto-nombre">{puesto.nombre}</span>
+            {puesto.verificado && <> <InsigniaVerificado compacta /></>}
             <span className="producto-puesto-donde">{ubicacion(puesto)}</span>
             {puesto.cerradoHoy && <span className="producto-puesto-cerrado">Este puesto cerró hoy</span>}
           </Link>

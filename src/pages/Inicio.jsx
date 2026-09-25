@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
 import IconoRubro from '../components/IconoRubro'
+import InsigniaVerificado from '../components/InsigniaVerificado'
 import { ubicacion, estadoDeHoy, RUBROS } from '../utils/formato'
 
 function EstadoHoy({ puesto }) {
@@ -52,7 +53,7 @@ export default function Inicio() {
     () =>
       puestos
         .filter((p) => !rubroActivo || p.rubro === rubroActivo)
-        .sort((a, b) => pesoHoy(a) - pesoHoy(b) || a.nombre.localeCompare(b.nombre)),
+        .sort((a, b) => pesoHoy(a) - pesoHoy(b) || Number(b.verificado) - Number(a.verificado) || a.nombre.localeCompare(b.nombre)),
     [puestos, rubroActivo]
   )
 
@@ -63,7 +64,7 @@ export default function Inicio() {
   useEffect(() => {
     supabase
       .from('puestos')
-      .select('id, nombre, rubro, pasillo, numero_puesto, foto_url, estado_hoy, estado_hoy_fecha, productos(count)')
+      .select('id, nombre, rubro, pasillo, numero_puesto, foto_url, estado_hoy, estado_hoy_fecha, verificado, productos(count)')
       .eq('activo', true)
       .order('nombre')
       .then(({ data, error }) => {
@@ -147,6 +148,7 @@ export default function Inicio() {
                   pasillo: r.pasillo,
                   numero_puesto: r.numero_puesto,
                   cerradoHoy: r.cerrado_hoy,
+                  verificado: r.verificado,
                 }}
               />
             ))}
@@ -203,7 +205,9 @@ export default function Inicio() {
                     {p.rubro}
                     <EstadoHoy puesto={p} />
                   </span>
-                  <span className="puesto-nombre">{p.nombre}</span>
+                  <span className="puesto-nombre">
+                    {p.nombre} {p.verificado && <InsigniaVerificado compacta />}
+                  </span>
                   <span className="puesto-ubicacion">{ubicacion(p)}</span>
                   <span className="puesto-conteo">{p.productos?.[0]?.count ?? 0} productos</span>
                 </Link>

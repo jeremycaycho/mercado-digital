@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
 import MapaMercado from '../components/MapaMercado'
+import InsigniaVerificado from '../components/InsigniaVerificado'
 import { ubicacion, linkWhatsApp, estadoDeHoy, tieneCoordenadas } from '../utils/formato'
 
 const ORDEN = { disponible: 0, pocos: 1, agotado: 2 }
@@ -59,6 +60,7 @@ export default function Puesto() {
         <span className="puesto-rubro">
           {puesto.rubro}
           {hoy && <span className={`badge-hoy badge-${hoy}`}>{hoy === 'abierto' ? 'Abierto hoy' : 'Cerrado hoy'}</span>}
+          {puesto.verificado && <InsigniaVerificado />}
         </span>
         <h1>{puesto.nombre}</h1>
         {puesto.descripcion && <p className="puesto-desc">{puesto.descripcion}</p>}

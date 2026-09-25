@@ -8,6 +8,8 @@ import EditarPuesto from '../components/EditarPuesto'
 import MiQR from '../components/MiQR'
 import CatalogoModal from '../components/CatalogoModal'
 import AbrirDia from '../components/AbrirDia'
+import InsigniaVerificado from '../components/InsigniaVerificado'
+import { useEsAdmin } from '../hooks/useEsAdmin'
 import CrearPuesto from '../components/CrearPuesto'
 import NuevoProducto from '../components/NuevoProducto'
 import ProductoEditable from '../components/ProductoEditable'
@@ -24,6 +26,7 @@ export default function Panel({ usuario }) {
   const [editando, setEditando] = useState(false)
   const [verQR, setVerQR] = useState(false)
   const [verCatalogo, setVerCatalogo] = useState(false)
+  const esAdmin = useEsAdmin(usuario.id)
   const avisar = (texto) => setToast({ texto, id: Date.now() })
   const cerrarToast = useCallback(() => setToast(null), [])
 
@@ -157,9 +160,15 @@ export default function Panel({ usuario }) {
         <p className="mercado-nombre">Tu puesto</p>
         <h1>{puesto.nombre}</h1>
         <p className="cabecera-sub">{ubicacion(puesto)}</p>
+        {puesto.verificado ? (
+          <p className="cabecera-sub"><InsigniaVerificado /></p>
+        ) : (
+          <p className="cabecera-sub cabecera-nota">Tu puesto aún no está verificado. Un encargado de Mercado Digital lo visitará para darte la insignia.</p>
+        )}
         <div className="cabecera-acciones">
           <Link to={`/puesto/${puesto.id}`} className="enlace-claro">Ver como cliente</Link>
           <button className="enlace-claro" onClick={() => setVerQR(true)}>Mi QR</button>
+          {esAdmin && <Link to="/admin" className="enlace-claro">Administrar</Link>}
           <button className="enlace-claro" onClick={salir}>Salir</button>
         </div>
       </header>

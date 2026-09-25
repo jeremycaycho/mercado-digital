@@ -766,3 +766,80 @@ a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2
 .abrir-dia-opcion input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--cartulina); }
 .btn-abrir { margin-top: 4px; background: var(--cartulina); color: var(--tinta); font-size: 19px; }
 .abrir-dia .enlace-claro { justify-self: center; padding: 4px; }
+
+/* ===== Paso 17: administrador y verificación ===== */
+.insignia-verificado {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 8px;
+  padding: 1px 8px 1px 5px;
+  background: #1F5F8B;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+.insignia-verificado svg { width: 14px; height: 14px; }
+.insignia-verificado:has(.oculto) { padding: 2px; margin-left: 4px; }
+.cabecera-sub .insignia-verificado { margin-left: 0; background: #fff; color: #1F5F8B; }
+.cabecera-nota { font-size: 14px; opacity: 0.85; margin-top: 6px; }
+
+.cabecera-admin { background: var(--tinta); }
+.pestanas { display: flex; gap: 4px; margin: 0 -16px; padding: 0 16px; overflow-x: auto; border-bottom: 2px solid var(--linea); }
+.pestana {
+  flex-shrink: 0;
+  padding: 12px 14px;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  color: var(--gris);
+  font-weight: 700;
+  cursor: pointer;
+}
+.pestana.activa { color: var(--tinta); border-bottom-color: var(--verde); }
+.filtros-admin, .admin-rubros { margin: 12px 0; }
+
+.admin-item { display: grid; gap: 6px; padding: 14px 0; border-bottom: 1px solid var(--linea); }
+.admin-item-cabeza { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 17px; }
+.admin-item-cabeza .insignia-verificado { margin-left: 0; }
+.admin-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+.btn-compacto { width: auto; margin-top: 0; padding: 10px 18px; font-size: 16px; }
+.admin-acciones .btn-secundario { padding: 9px 14px; }
+.admin-item .btn-eliminar { justify-self: start; padding-left: 0; }
+
+.campo-simple, .formulario textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 16px;
+  padding: 9px 12px;
+  border: 2px solid var(--linea);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tinta);
+}
+.buscador-admin { margin-top: 18px; }
+.admin-agregar-palabra { display: flex; gap: 8px; }
+.admin-agregar-palabra .btn-secundario { flex-shrink: 0; }
+.chip-quitar { display: inline-flex; align-items: center; gap: 4px; padding-right: 4px; }
+.chip-quitar button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+.chip-quitar button:hover { background: rgba(14, 107, 65, 0.15); }
+
+.admin-mercado { margin-top: 14px; padding: 12px 14px; border: 2px solid var(--linea); border-radius: 12px; }
+.admin-mercado summary { cursor: pointer; font-size: 17px; }
+.admin-mercado .formulario { border: 0; padding: 12px 0 0; }
