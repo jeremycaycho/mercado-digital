@@ -34,7 +34,7 @@ export default function ReportarPuesto({ puesto }) {
 
   return (
     <>
-      <button className="enlace enlace-reportar" onClick={() => setAbierto(true)}>Reportar este puesto</button>
+      <button className="enlace enlace-reportar" onClick={() => setAbierto(true)} data-guia="reportar">Reportar este puesto</button>
       {abierto && (
         <div className="confirmar-fondo" role="dialog" aria-modal="true" aria-labelledby="titulo-reporte">
           <div className="confirmar-caja">

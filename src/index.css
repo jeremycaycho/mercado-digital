@@ -1137,6 +1137,8 @@ a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2
 
 /* ===== Guía paso a paso ===== */
 .recorrido { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+.recorrido-bloqueo { position: fixed; inset: 0; pointer-events: auto; touch-action: none; }
+.recorrido-foco { pointer-events: none; }
 .recorrido-fondo { position: absolute; inset: 0; background: rgba(22, 36, 28, 0.7); pointer-events: auto; }
 .recorrido-foco {
   position: fixed;
@@ -1193,3 +1195,65 @@ a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2
 .google-maps { margin-top: 20px; }
 .pasos-google { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .google-maps .btn-secundario { justify-self: start; }
+
+/* ===== Paso 18.8: registro profesional ===== */
+.pasos-registro { display: flex; gap: 8px; margin-top: 10px; }
+.pasos-registro span { flex: 1; padding-top: 8px; border-top: 4px solid rgba(255, 255, 255, 0.3); font-size: 14px; opacity: 0.75; }
+.pasos-registro span.activo { border-top-color: var(--cartulina); opacity: 1; font-weight: 700; }
+
+.error-campo { color: var(--rojo); font-size: 14px; font-weight: 700; }
+.ok-campo { color: var(--verde); font-size: 14px; font-weight: 700; }
+.formulario input[aria-invalid="true"] { border-color: var(--rojo); }
+
+.campo-clave { display: grid; gap: 4px; font-weight: 700; font-size: 15px; }
+.campo-clave-caja { position: relative; }
+.campo-clave-caja input {
+  width: 100%;
+  font: inherit;
+  font-size: 18px;
+  padding: 10px 88px 10px 12px;
+  border: 2px solid var(--linea);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tinta);
+}
+.ver-clave {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--verde-claro);
+  color: var(--verde);
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ver-clave svg { width: 18px; height: 18px; }
+
+.medidor { display: grid; gap: 6px; margin-top: 4px; font-weight: 400; }
+.medidor-barras { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.medidor-barras span { height: 7px; background: var(--linea); border-radius: 999px; transition: background 0.25s ease; }
+.nivel-0 .llena { background: var(--rojo); }
+.nivel-1 .llena { background: #E07B00; }
+.nivel-2 .llena { background: #7BAE3A; }
+.nivel-3 .llena { background: var(--verde); }
+.medidor-texto { margin: 0; font-size: 14px; }
+.nivel-0 .medidor-texto strong { color: var(--rojo); }
+.nivel-1 .medidor-texto strong { color: #B25F00; }
+.nivel-2 .medidor-texto strong { color: #4F7D1E; }
+.nivel-3 .medidor-texto strong { color: var(--verde); }
+.medidor-aviso { margin: 0; color: var(--rojo); font-size: 14px; }
+.medidor-requisitos { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 14px; color: var(--gris); }
+.medidor-requisitos li.ok { color: var(--verde); }
+
+.mis-datos { display: grid; gap: 8px; padding: 12px; background: #F6F8F7; border-radius: 10px; }
+.mis-datos .enlace { justify-self: start; }
+.titular { color: var(--tinta); }
+
+.guia-envoltura { display: block; flex-shrink: 0; line-height: 0; }

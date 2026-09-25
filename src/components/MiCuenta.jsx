@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { repetirGuia } from './Recorrido'
+import MisDatos from './MisDatos'
 
 // Derechos del vendedor: descargar sus datos (acceso) y eliminar su cuenta (cancelación)
 export default function MiCuenta({ usuario, puesto, productos }) {
@@ -10,11 +11,14 @@ export default function MiCuenta({ usuario, puesto, productos }) {
   const [texto, setTexto] = useState('')
   const [eliminando, setEliminando] = useState(false)
   const [error, setError] = useState(null)
+  const [perfil, setPerfil] = useState(null)
+  const alCargarPerfil = useCallback((p) => setPerfil(p), [])
 
   function descargarDatos() {
     const datos = {
       exportado_el: new Date().toISOString(),
       cuenta: { correo: usuario.email, creada_el: usuario.created_at, acepto: usuario.user_metadata ?? {} },
+      datos_personales: perfil,
       puesto,
       productos,
     }
@@ -48,9 +52,10 @@ export default function MiCuenta({ usuario, puesto, productos }) {
   }
 
   return (
-    <details className="mi-cuenta">
+    <details className="mi-cuenta" data-guia="mi-cuenta">
       <summary>Mi cuenta</summary>
       <p className="nota">Ingresaste como {usuario.email}.</p>
+      <MisDatos usuarioId={usuario.id} onCargar={alCargarPerfil} />
       <button className="btn-secundario ancho-completo" onClick={descargarDatos}>Descargar mis datos</button>
       <button className="btn-secundario ancho-completo" onClick={() => { window.scrollTo(0, 0); repetirGuia() }}>Ver la guía otra vez</button>
       <button className="btn-secundario ancho-completo" onClick={() => supabase.auth.signOut()}>Cerrar sesión</button>

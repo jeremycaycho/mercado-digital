@@ -42,6 +42,23 @@ export default function Recorrido({ pasos, activo, onTerminar }) {
 
   useEffect(() => { if (activo) setIndice(0) }, [activo])
 
+  // Mientras dura la guía, la app queda bloqueada: no se puede tocar, escribir ni desplazar por error.
+  // Solo responden los botones de la guía.
+  useEffect(() => {
+    if (!activo) return
+    const raiz = document.getElementById('root')
+    const overflowAnterior = document.body.style.overflow
+    raiz?.setAttribute('inert', '')
+    raiz?.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = 'hidden'
+    document.activeElement?.blur?.()
+    return () => {
+      raiz?.removeAttribute('inert')
+      raiz?.removeAttribute('aria-hidden')
+      document.body.style.overflow = overflowAnterior
+    }
+  }, [activo])
+
   // Ubica el elemento a iluminar y lo mantiene alineado al hacer scroll o girar el celular
   useLayoutEffect(() => {
     if (!activo || !paso) return
@@ -90,6 +107,8 @@ export default function Recorrido({ pasos, activo, onTerminar }) {
 
   return createPortal(
     <div className="recorrido" aria-live="polite">
+      {/* Capa invisible que atrapa cualquier toque fuera de la burbuja */}
+      <div className="recorrido-bloqueo" onClick={(e) => e.stopPropagation()} onTouchMove={(e) => e.preventDefault()} />
       {caja ? (
         <div className="recorrido-foco" style={caja} />
       ) : (
@@ -110,7 +129,9 @@ export default function Recorrido({ pasos, activo, onTerminar }) {
         <p>{paso.texto}</p>
         <div className="recorrido-barra"><span style={{ width: `${((indice + 1) / visibles.length) * 100}%` }} /></div>
         <div className="recorrido-botones">
-          <button className="enlace" onClick={onTerminar}>Saltar guía</button>
+          <button className="enlace" onClick={() => window.confirm('¿Salir de la guía? Podrás verla otra vez desde Ayuda o Mi cuenta.') && onTerminar()}>
+            Saltar guía
+          </button>
           <div>
             {indice > 0 && <button className="btn-secundario" onClick={() => setIndice(indice - 1)}>Atrás</button>}
             <button className="btn-principal btn-compacto" onClick={() => (ultimo ? onTerminar() : setIndice(indice + 1))}>

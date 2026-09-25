@@ -28,7 +28,8 @@ export default function Terminos() {
 
       <h2>3. Cuentas de vendedor</h2>
       <ul>
-        <li>Debes registrar datos verdaderos y un puesto que exista y que tú atiendas o administres.</li>
+        <li>Debes registrar tus datos personales verdaderos (nombres, apellidos y documento de identidad) y un negocio que exista y que tú atiendas o administres. Solo se permite una cuenta por documento.</li>
+        <li>Podemos pedirte que muestres tu documento durante la visita de verificación.</li>
         <li>Eres responsable de mantener en secreto tu contraseña y de todo lo que se haga con tu cuenta.</li>
         <li>Debes mantener actualizados tus precios, la disponibilidad de tus productos y si abres o no.</li>
         <li>La información de tu puesto que registras (nombre, rubro, ubicación, referencia, WhatsApp, horario, métodos de pago, fotos, productos y precios) es <strong>pública</strong>, porque ese es el propósito de la aplicación.</li>

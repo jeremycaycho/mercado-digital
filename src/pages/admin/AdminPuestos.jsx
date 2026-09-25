@@ -15,14 +15,21 @@ export default function AdminPuestos({ usuarioId, avisar }) {
   const [puestos, setPuestos] = useState(null)
   const [filtro, setFiltro] = useState('pendientes')
   const [error, setError] = useState(null)
+  const [perfiles, setPerfiles] = useState({})
 
   const cargar = useCallback(async () => {
     const { data, error } = await supabase
       .from('puestos')
       .select('id, nombre, rubro, pasillo, numero_puesto, referencia, whatsapp, activo, verificado, verificado_en, created_at, owner_id, lat, lng, mercados(nombre), productos(count)')
       .order('created_at', { ascending: false })
-    if (error) setError('No se pudieron cargar los puestos.')
-    else setPuestos(data)
+    if (error) return setError('No se pudieron cargar los puestos.')
+    setPuestos(data)
+    // Datos del titular (solo visibles para administradores), para la verificación en persona
+    const duenos = [...new Set(data.map((p) => p.owner_id).filter(Boolean))]
+    if (duenos.length) {
+      const { data: lista } = await supabase.from('perfiles').select('user_id, nombres, apellidos, tipo_documento, numero_documento, celular').in('user_id', duenos)
+      setPerfiles(Object.fromEntries((lista ?? []).map((x) => [x.user_id, x])))
+    }
   }, [])
 
   useEffect(() => { cargar() }, [cargar])
@@ -53,7 +60,7 @@ export default function AdminPuestos({ usuarioId, avisar }) {
   return (
     <section>
       <p className="nota">
-        Verifica un puesto solo después de visitarlo en persona y confirmar que existe y que el vendedor es quien dice ser.
+        Verifica un puesto solo después de visitarlo en persona: confirma que existe y pide ver el documento del titular para compararlo con el registrado.
       </p>
       <div className="chips filtros-admin" role="group" aria-label="Filtrar puestos">
         {FILTROS.map(([id, texto, cond]) => (
@@ -77,6 +84,12 @@ export default function AdminPuestos({ usuarioId, avisar }) {
               {p.rubro}{p.mercados?.nombre ? ` en ${p.mercados.nombre}` : ' (negocio independiente)'}. {ubicacion(p) || 'Sin calle indicada'}.
             </p>
             {p.referencia && <p className="nota sin-margen">Referencia: {p.referencia}</p>}
+            {perfiles[p.owner_id] && (
+              <p className="nota sin-margen titular">
+                Titular: {perfiles[p.owner_id].nombres} {perfiles[p.owner_id].apellidos}, {perfiles[p.owner_id].tipo_documento} {perfiles[p.owner_id].numero_documento}
+                {perfiles[p.owner_id].celular && `, cel. ${perfiles[p.owner_id].celular}`}
+              </p>
+            )}
             <p className="nota sin-margen">
               {p.productos?.[0]?.count ?? 0} productos. Registrado {haceCuanto(p.created_at)}.
               {!tieneCoordenadas(p) && ' Sin punto en el mapa.'}

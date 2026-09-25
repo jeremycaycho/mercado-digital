@@ -24,6 +24,7 @@ export default function Privacidad() {
         aplicación y mostrar estadísticas a los vendedores.</p>
       <p><strong>Si eres vendedor</strong> usamos:</p>
       <ul>
+        <li><strong>Tus datos de identificación:</strong> nombres, apellidos, tipo y número de documento (DNI, carné de extranjería o pasaporte) y celular. <strong>Nunca se muestran a los clientes</strong>: solo los ves tú y el administrador.</li>
         <li>Tu correo y tu contraseña (la contraseña se guarda cifrada; nadie puede verla).</li>
         <li>Los datos de tu puesto: nombre, rubro, calle, número, referencia, WhatsApp, horario, métodos de pago y si abres hoy.</li>
         <li>La ubicación de tu puesto en el mapa, solo si tú decides marcarla. No seguimos tu ubicación: solo guardamos el punto que eliges.</li>
@@ -34,6 +35,7 @@ export default function Privacidad() {
       <h2>3. Para qué los usamos</h2>
       <ul>
         <li>Crear y proteger tu cuenta, y permitirte recuperar tu contraseña.</li>
+        <li>Identificarte como titular del negocio, confirmar tu identidad cuando visitemos tu puesto y evitar cuentas falsas o duplicadas.</li>
         <li>Mostrar tu puesto y tus productos a los clientes, y que puedan contactarte o llegar a ti.</li>
         <li>Verificar puestos en persona y atender reportes de información falsa.</li>
         <li>Mostrarte estadísticas de tu puesto y mejorar la aplicación.</li>
@@ -44,7 +46,7 @@ export default function Privacidad() {
       <h2>4. Qué información es pública</h2>
       <p>
         Los datos de tu puesto (incluidos tu WhatsApp y la ubicación que marques) se muestran a cualquier persona,
-        porque ese es el propósito de la aplicación. Tu correo y tu contraseña <strong>nunca</strong> son públicos.
+        porque ese es el propósito de la aplicación. Tus nombres, tu documento, tu celular personal, tu correo y tu contraseña <strong>nunca</strong> son públicos.
       </p>
 
       <h2>5. Con quién los compartimos</h2>
@@ -77,7 +79,7 @@ export default function Privacidad() {
       <p>Tienes derecho a acceder a tus datos, rectificarlos, cancelarlos (eliminarlos) y oponerte a su uso. Puedes hacerlo tú mismo desde tu panel:</p>
       <ul>
         <li><strong>Acceso:</strong> "Mi cuenta" → "Descargar mis datos".</li>
-        <li><strong>Rectificación:</strong> "Editar datos del puesto" o editando tus productos.</li>
+        <li><strong>Rectificación:</strong> "Mi cuenta" → "Corregir mis datos", "Editar datos del puesto" o editando tus productos. Para cambiar tu documento, escríbenos.</li>
         <li><strong>Cancelación:</strong> "Mi cuenta" → "Eliminar mi puesto y mi cuenta".</li>
       </ul>
       <p>

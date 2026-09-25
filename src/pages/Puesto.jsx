@@ -76,7 +76,7 @@ export default function Puesto() {
 
       {puesto.foto_url && <img className="puesto-foto" src={puesto.foto_url} alt={`Puesto ${puesto.nombre}`} />}
 
-      <header className="puesto-cabecera">
+      <header className="puesto-cabecera" data-guia="datos-puesto">
         <span className="puesto-rubro">
           {puesto.rubro}
           {hoy && <span className={`badge-hoy badge-${hoy}`}>{hoy === 'abierto' ? 'Abierto hoy' : 'Cerrado hoy'}</span>}
@@ -120,15 +120,16 @@ export default function Puesto() {
         <p className="nota">Toca "Agregar", elige la cantidad y envía tu pedido por WhatsApp.</p>
       )}
       <ul className="lista" data-guia="productos">
-        {productos.map((p) => (
+        {productos.map((p, i) => (
           <ProductoFila
             key={p.id}
+            guia={i === 0}
             {...p}
             rubro={puesto.rubro}
             whatsapp={puesto.whatsapp}
             accion={
               puesto.whatsapp ? (
-                <ControlCantidad producto={p} cantidad={items[p.id]?.cantidad} onCambiar={(c) => fijar(p, c)} />
+                <ControlCantidad producto={p} cantidad={items[p.id]?.cantidad} onCambiar={(c) => fijar(p, c)} guia={p.id === productos.find((x) => x.estado !== 'agotado')?.id} />
               ) : undefined
             }
           />

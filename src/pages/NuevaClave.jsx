@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { useSesion } from '../hooks/useSesion'
 import { traducirError } from '../utils/errores'
+import CampoClave from '../components/CampoClave'
+import MedidorClave from '../components/MedidorClave'
+import { evaluarClave, CLAVE_MINIMA } from '../utils/clave'
 
 // Página a la que llega el vendedor desde el correo de "Olvidé mi contraseña"
 export default function NuevaClave() {
@@ -15,6 +18,7 @@ export default function NuevaClave() {
 
   async function enviar(e) {
     e.preventDefault()
+    if (evaluarClave(clave).nivel < CLAVE_MINIMA) return setMensaje('Tu contraseña debe ser al menos "Segura".')
     if (clave !== repetir) return setMensaje('Las dos contraseñas no coinciden.')
     setGuardando(true)
     setMensaje(null)
@@ -40,15 +44,15 @@ export default function NuevaClave() {
         </>
       ) : (
         <form className="formulario" onSubmit={enviar}>
-          <label>
-            Nueva contraseña
-            <input type="password" autoComplete="new-password" minLength={8} value={clave} onChange={(e) => setClave(e.target.value)} required />
-            <span className="nota sin-margen">Mínimo 8 caracteres.</span>
-          </label>
-          <label>
-            Repite la contraseña
-            <input type="password" autoComplete="new-password" minLength={8} value={repetir} onChange={(e) => setRepetir(e.target.value)} required />
-          </label>
+          <CampoClave etiqueta="Nueva contraseña" valor={clave} onCambiar={setClave} required ayuda={<MedidorClave clave={clave} />} />
+          <CampoClave
+            etiqueta="Repite la contraseña"
+            valor={repetir}
+            onCambiar={setRepetir}
+            required
+            error={repetir && repetir !== clave ? 'Las contraseñas no coinciden.' : null}
+            ayuda={repetir && repetir === clave ? <span className="ok-campo">✓ Las contraseñas coinciden</span> : null}
+          />
           {mensaje && <p className="aviso-error">{mensaje}</p>}
           <button className="btn-principal" disabled={guardando}>{guardando ? 'Guardando…' : 'Guardar y entrar a mi puesto'}</button>
         </form>

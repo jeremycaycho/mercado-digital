@@ -1,7 +1,7 @@
 import { reglaDe, textoCantidad } from '../utils/pedido'
 
 // Botón "Agregar" que se convierte en − cantidad + al tocarlo
-export default function ControlCantidad({ producto, cantidad, onCambiar, compacto = false }) {
+export default function ControlCantidad({ producto, cantidad, onCambiar, compacto = false, guia = false }) {
   const regla = reglaDe(producto.unidad)
   const agotado = producto.estado === 'agotado'
 
@@ -12,7 +12,7 @@ export default function ControlCantidad({ producto, cantidad, onCambiar, compact
         onClick={() => onCambiar(regla.inicial)}
         disabled={agotado}
         aria-label={`Agregar ${producto.nombre} al pedido`}
-        data-guia="agregar"
+        data-guia={guia ? 'agregar' : undefined}
       >
         {agotado ? 'Agotado' : 'Agregar'}
       </button>

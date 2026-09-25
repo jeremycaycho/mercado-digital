@@ -212,6 +212,7 @@ export default function Panel({ usuario }) {
         </div>
       ) : (
         <section className="perfil-resumen">
+          <span data-guia="foto-puesto" className="guia-envoltura">
           <CapturaFoto
             className="foto-puesto-editar"
             titulo="Foto de tu puesto"
@@ -223,12 +224,13 @@ export default function Panel({ usuario }) {
           >
             {puesto.foto_url ? <img src={puesto.foto_url} alt="" /> : <span>Foto del puesto</span>}
           </CapturaFoto>
+          </span>
           <div className="perfil-datos">
             <p>{puesto.horario || <span className="falta">Sin horario</span>}</p>
             <p>
               {puesto.metodos_pago?.length ? puesto.metodos_pago.join(', ') : <span className="falta">Sin métodos de pago</span>}
             </p>
-            <button className="enlace" onClick={() => setEditando(true)}>Editar datos del puesto</button>
+            <button className="enlace" onClick={() => setEditando(true)} data-guia="editar-puesto">Editar datos del puesto</button>
           </div>
         </section>
       )}
@@ -249,7 +251,7 @@ export default function Panel({ usuario }) {
       <button className="btn-principal" onClick={() => setVerCatalogo(true)} data-guia="catalogo">
         Elegir productos del catálogo
       </button>
-      <NuevoProducto onAgregar={agregar} />
+      <div data-guia="agregar-mano"><NuevoProducto onAgregar={agregar} /></div>
 
       <h2 className="subtitulo">Tus productos ({productos.length})</h2>
       {productos.length === 0 && (

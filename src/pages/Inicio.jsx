@@ -182,7 +182,7 @@ export default function Inicio() {
         <p className="mercado-nombre">
           {mercado ? mercado.nombre : 'Mercado Digital'}
           {mercados?.length > 0 && (
-            <button className="enlace-claro cambiar-mercado" onClick={() => setEligiendo(true)}>
+            <button className="enlace-claro cambiar-mercado" onClick={() => setEligiendo(true)} data-guia="elegir-mercado">
               {mercado ? 'Cambiar' : 'Elegir mercado'}
             </button>
           )}
@@ -285,8 +285,8 @@ export default function Inicio() {
             </p>
           )}
           <ul className="lista-puestos" data-guia="lista-puestos">
-            {puestosVisibles.map((p) => (
-              <li key={p.id}>
+            {puestosVisibles.map((p, i) => (
+              <li key={p.id} data-guia={i === 0 ? 'primer-puesto' : undefined}>
                 <Link to={`/puesto/${p.id}`} className="puesto-fila">
                   {p.foto_url ? (
                     <img className="puesto-mini" src={p.foto_url} alt="" loading="lazy" />
