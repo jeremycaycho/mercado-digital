@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { METODOS_PAGO, RUBROS } from '../utils/formato'
+import ElegirUbicacion from './ElegirUbicacion'
 
 export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
   const wa = puesto.whatsapp ?? ''
@@ -9,6 +10,9 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
     rubro: puesto.rubro ?? 'Otros',
     pasillo: puesto.pasillo ?? '',
     numero_puesto: puesto.numero_puesto ?? '',
+    referencia: puesto.referencia ?? '',
+    lat: puesto.lat ?? null,
+    lng: puesto.lng ?? null,
     whatsapp: wa.length === 11 && wa.startsWith('51') ? wa.slice(2) : wa,
     horario: puesto.horario ?? '',
     metodos_pago: puesto.metodos_pago ?? [],
@@ -33,6 +37,7 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
       nombre: form.nombre.trim(),
       descripcion: form.descripcion.trim() || null,
       horario: form.horario.trim() || null,
+      referencia: form.referencia.trim() || null,
       whatsapp: digitos.length === 9 ? `51${digitos}` : digitos || null,
     })
     setGuardando(false)
@@ -56,16 +61,22 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
           {RUBROS.map((r) => <option key={r} value={r}>{r}</option>)}
         </select>
       </label>
-      <div className="dos-columnas">
-        <label>
-          Pasillo
-          <input value={form.pasillo} onChange={cambiar('pasillo')} />
-        </label>
-        <label>
-          N.º de puesto
-          <input value={form.numero_puesto} onChange={cambiar('numero_puesto')} />
-        </label>
-      </div>
+      <label>
+        Calle, jirón o pasillo
+        <input value={form.pasillo} onChange={cambiar('pasillo')} placeholder="Ej: Jr. Los Olivos, cuadra 3" />
+      </label>
+      <label>
+        N.º de puesto o de casa (opcional)
+        <input value={form.numero_puesto} onChange={cambiar('numero_puesto')} placeholder="Ej: 12 o 345" />
+      </label>
+      <label>
+        Referencia
+        <input value={form.referencia} onChange={cambiar('referencia')} placeholder="Ej: frente a la farmacia, toldo azul" maxLength={120} />
+      </label>
+      <fieldset className="grupo-pagos">
+        <legend>Ubicación en el mapa</legend>
+        <ElegirUbicacion lat={form.lat} lng={form.lng} onCambiar={(lat, lng) => setForm((f) => ({ ...f, lat, lng }))} />
+      </fieldset>
       <label>
         Horario
         <input value={form.horario} onChange={cambiar('horario')} placeholder="Ej: Lunes a sábado, 6 a. m. a 2 p. m." />

@@ -95,6 +95,8 @@ export default function Inicio() {
 
   const texto = termino.trim()
   const hayBusqueda = texto.length >= 2
+  const exactos = resultados.filter((r) => r.coincide).length
+  const soloParecidos = resultados.length > 0 && exactos === 0
 
   return (
     <main className="pagina">
@@ -118,11 +120,13 @@ export default function Inicio() {
           <h2 className="subtitulo">
             {buscando
               ? 'Buscando…'
-              : `${resultados.length} ${resultados.length === 1 ? 'puesto tiene' : 'resultados para'} "${texto}"`}
+              : soloParecidos
+                ? `No encontramos "${texto}". ¿Quizás buscas esto?`
+                : `${exactos} ${exactos === 1 ? 'resultado' : 'resultados'} para "${texto}"`}
           </h2>
           {!buscando && resultados.length === 0 && (
             <p className="vacio">
-              Ningún puesto tiene "{texto}" todavía. Prueba con una palabra más corta, por ejemplo "papa" en vez de "papas amarillas".
+              Ningún puesto tiene "{texto}" todavía. Prueba con otra palabra o revisa las categorías.
             </p>
           )}
           <ul className="lista">
@@ -174,6 +178,7 @@ export default function Inicio() {
             </nav>
           )}
 
+          <Link to="/plano" className="enlace-plano">Ver mapa del mercado</Link>
           <h2 className="subtitulo">
             {rubroActivo
               ? `${puestosVisibles.length} ${puestosVisibles.length === 1 ? 'puesto' : 'puestos'} de ${rubroActivo}`

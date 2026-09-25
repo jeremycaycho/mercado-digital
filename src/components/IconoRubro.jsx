@@ -93,6 +93,12 @@ const RUBROS = {
   },
 }
 
+// Colores del rubro, para usarlos también en el plano
+export const colorRubro = (rubro) => {
+  const r = RUBROS[rubro] ?? RUBROS.Otros
+  return { fondo: r.fondo, color: r.color }
+}
+
 export default function IconoRubro({ rubro, className = '' }) {
   const r = RUBROS[rubro] ?? RUBROS.Otros
   return (

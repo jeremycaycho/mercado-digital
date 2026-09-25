@@ -551,3 +551,124 @@ a.btn-principal { color: #fff; }
 }
 .categoria.activa { border-color: var(--verde); background: var(--verde-claro); color: var(--verde); }
 .categoria-icono { width: 46px; height: 46px; border-radius: 12px; }
+
+/* ===== Paso 14: plano del mercado ===== */
+.titulo-pagina { margin-top: 8px; }
+.enlace-plano { display: inline-block; margin-top: 10px; color: var(--verde); font-weight: 700; }
+.puesto-donde .enlace-plano { display: block; margin-top: 4px; font-size: 15px; }
+.seccion-plano { margin-top: 28px; scroll-margin-top: 16px; }
+.plano-indicaciones { margin-top: 0; }
+
+.plano { display: grid; gap: 12px; margin-top: 10px; }
+.plano-pasillo-nombre { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--gris); }
+.plano-pasillo-activo .plano-pasillo-nombre { color: var(--tinta); }
+.plano-pasillo-activo .plano-pasillo-nombre::after { content: '  ←  aquí'; color: var(--verde); }
+
+/* Cada fila es un pasillo: los casilleros son los puestos */
+.plano-fila {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 70px;
+  padding: 9px 10px;
+  overflow-x: auto;
+  background: #F2F4F3;
+  border-radius: 12px;
+  scrollbar-width: thin;
+}
+.plano-pasillo-activo .plano-fila { background: var(--verde-claro); }
+
+.plano-celda {
+  flex-shrink: 0;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.plano-vacia {
+  background: #fff;
+  border: 2px dashed #CBD3CE;
+  color: #A3AEA7;
+  font-size: 13px;
+  font-weight: 400;
+}
+.plano-aqui {
+  min-width: 52px;
+  height: 52px;
+  background: var(--cartulina);
+  color: var(--tinta);
+  border-color: var(--tinta);
+  font-size: 18px;
+  box-shadow: 2px 2px 0 var(--tinta);
+  transform: rotate(-3deg);
+}
+a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+
+.plano-leyenda { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 14px; color: var(--gris); }
+.plano-leyenda i {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  vertical-align: -2px;
+  border: 2px solid;
+  border-radius: 4px;
+}
+.plano-leyenda .leyenda-aqui { background: var(--cartulina); border-color: var(--tinta); }
+.plano-leyenda .leyenda-vacia { background: #fff; border: 2px dashed #CBD3CE; }
+
+/* ===== Paso 14 corregido: mapa real para mercados de calle ===== */
+.puesto-referencia { display: block; margin-top: 2px; color: var(--gris); }
+.mapa-mercado { display: grid; gap: 10px; margin-top: 10px; }
+.mapa {
+  position: relative;
+  isolation: isolate;          /* el mapa no se sobrepone al botón de WhatsApp ni a los avisos */
+  width: 100%;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #E8ECEA;
+}
+.seccion-plano .btn-principal { margin-top: 12px; }
+.elegir-ubicacion { display: grid; gap: 10px; }
+.elegir-ubicacion .enlace { justify-self: start; }
+
+/* Pines del mapa */
+.pin-contenedor { background: none; border: 0; }
+.pin {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid;
+  border-radius: 10px;
+  font: 700 13px var(--f-texto);
+  box-shadow: 0 2px 0 rgba(22, 36, 28, 0.35);
+}
+.pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: currentColor;
+}
+.pin-aqui {
+  width: 44px;
+  height: 44px;
+  background: var(--cartulina);
+  color: var(--tinta);
+  border-color: var(--tinta);
+  font-size: 16px;
+  box-shadow: 2px 2px 0 var(--tinta);
+}
+.leaflet-container { font-family: var(--f-texto); }

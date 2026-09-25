@@ -5,7 +5,7 @@ const RUBROS = ['Abarrotes', 'Verduras', 'Frutas', 'Carnes', 'Pollo', 'Pescado',
 
 export default function CrearPuesto({ usuario, onCreado, onSalir }) {
   const [mercados, setMercados] = useState([])
-  const [form, setForm] = useState({ mercado_id: '', nombre: '', rubro: 'Abarrotes', pasillo: '', numero_puesto: '', whatsapp: '' })
+  const [form, setForm] = useState({ mercado_id: '', nombre: '', rubro: 'Abarrotes', pasillo: '', numero_puesto: '', referencia: '', whatsapp: '' })
   const [error, setError] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
@@ -56,16 +56,19 @@ export default function CrearPuesto({ usuario, onCreado, onSalir }) {
             {RUBROS.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
         </label>
-        <div className="dos-columnas">
-          <label>
-            Pasillo
-            <input value={form.pasillo} onChange={cambiar('pasillo')} placeholder="Ej: A" />
-          </label>
-          <label>
-            N.º de puesto
-            <input value={form.numero_puesto} onChange={cambiar('numero_puesto')} placeholder="Ej: 12" />
-          </label>
-        </div>
+        <label>
+          Calle, jirón o pasillo
+          <input value={form.pasillo} onChange={cambiar('pasillo')} placeholder="Ej: Jr. Los Olivos, cuadra 3" />
+        </label>
+        <label>
+          N.º de puesto o de casa (opcional)
+          <input value={form.numero_puesto} onChange={cambiar('numero_puesto')} placeholder="Ej: 12 o 345" />
+        </label>
+        <label>
+          Referencia
+          <input value={form.referencia} onChange={cambiar('referencia')} placeholder="Ej: frente a la farmacia, toldo azul" />
+        </label>
+        <p className="nota sin-margen">Después podrás marcar tu puesto en el mapa desde "Editar datos del puesto".</p>
         <label>
           WhatsApp del puesto
           <input type="tel" inputMode="numeric" value={form.whatsapp} onChange={cambiar('whatsapp')} placeholder="Ej: 987654321" />

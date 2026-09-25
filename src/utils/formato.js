@@ -1,13 +1,22 @@
 export const formatoPrecio = (precio) =>
   precio == null ? 'Consultar' : `S/ ${Number(precio).toFixed(2)}`
 
+// "A" -> "Pasillo A" (mercado techado); "Jr. Los Olivos cdra. 3" se muestra tal cual (mercado de calle)
+export const nombreZona = (zona) => {
+  const t = zona?.trim()
+  if (!t) return null
+  return t.length <= 3 ? `Pasillo ${t}` : t
+}
+
 export const ubicacion = (puesto) =>
-  [
-    puesto.pasillo && `Pasillo ${puesto.pasillo}`,
-    puesto.numero_puesto && `puesto ${puesto.numero_puesto}`,
-  ]
+  [nombreZona(puesto.pasillo), puesto.numero_puesto && `N.º ${puesto.numero_puesto}`]
     .filter(Boolean)
     .join(', ')
+
+export const tieneCoordenadas = (p) => p?.lat != null && p?.lng != null
+
+// Centro por defecto: San Martín de Porres, Lima
+export const CENTRO_POR_DEFECTO = [-12.0065, -77.0775]
 
 export function linkWhatsApp(numero, mensaje) {
   if (!numero) return null

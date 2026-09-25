@@ -24,7 +24,8 @@ export default async function handler(req, res) {
       })
       const [p] = r.ok ? await r.json() : []
       if (p) {
-        const donde = [p.pasillo && `Pasillo ${p.pasillo}`, p.numero_puesto && `puesto ${p.numero_puesto}`]
+        const zona = p.pasillo?.trim()
+        const donde = [zona && (zona.length <= 3 ? `Pasillo ${zona}` : zona), p.numero_puesto && `N.º ${p.numero_puesto}`]
           .filter(Boolean)
           .join(', ')
         const cantidad = p.productos?.[0]?.count ?? 0

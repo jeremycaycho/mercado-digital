@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
-import { ubicacion, linkWhatsApp, estadoDeHoy } from '../utils/formato'
+import MapaMercado from '../components/MapaMercado'
+import { ubicacion, linkWhatsApp, estadoDeHoy, tieneCoordenadas } from '../utils/formato'
 
 const ORDEN = { disponible: 0, pocos: 1, agotado: 2 }
 
@@ -14,7 +15,7 @@ export default function Puesto() {
   useEffect(() => {
     supabase
       .from('puestos')
-      .select('*, mercados(nombre), productos(*)')
+      .select('*, mercados(nombre, indicaciones), productos(*)')
       .eq('id', id)
       .maybeSingle()
       .then(({ data, error }) => {
@@ -62,7 +63,10 @@ export default function Puesto() {
         <h1>{puesto.nombre}</h1>
         {puesto.descripcion && <p className="puesto-desc">{puesto.descripcion}</p>}
         <p className="puesto-donde">
-          <strong>{ubicacion(puesto)}</strong> en {puesto.mercados?.nombre}
+          {ubicacion(puesto) && <><strong>{ubicacion(puesto)}</strong> en </>}
+          {puesto.mercados?.nombre}
+          {puesto.referencia && <span className="puesto-referencia">{puesto.referencia}</span>}
+          <a href="#plano" className="enlace-plano">Ver en el mapa</a>
         </p>
         {(puesto.horario || puesto.metodos_pago?.length > 0) && (
           <dl className="puesto-datos">
@@ -94,6 +98,26 @@ export default function Puesto() {
           <ProductoFila key={p.id} {...p} rubro={puesto.rubro} whatsapp={puesto.whatsapp} />
         ))}
       </ul>
+
+      <section id="plano" className="seccion-plano">
+        <h2 className="subtitulo">Cómo llegar</h2>
+        {puesto.referencia && <p className="nota plano-indicaciones"><strong>Referencia:</strong> {puesto.referencia}</p>}
+        {!tieneCoordenadas(puesto) && puesto.mercados?.indicaciones && (
+          <p className="nota plano-indicaciones">{puesto.mercados.indicaciones}</p>
+        )}
+        <MapaMercado mercadoId={puesto.mercado_id} resaltarId={puesto.id} alto={260} />
+        {tieneCoordenadas(puesto) && (
+          <a
+            className="btn-principal centrado"
+            href={`https://www.google.com/maps/dir/?api=1&destination=${puesto.lat},${puesto.lng}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Cómo llegar con Google Maps
+          </a>
+        )}
+        <Link to={`/plano?mercado=${puesto.mercado_id}`} className="enlace-plano">Ver todos los puestos en el mapa</Link>
+      </section>
 
       {wa && (
         <a className="btn-wa btn-wa-fijo" href={wa} target="_blank" rel="noreferrer">
