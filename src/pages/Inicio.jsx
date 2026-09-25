@@ -5,6 +5,7 @@ import ProductoFila from '../components/ProductoFila'
 import IconoRubro from '../components/IconoRubro'
 import InsigniaVerificado from '../components/InsigniaVerificado'
 import { ubicacion, estadoDeHoy, RUBROS } from '../utils/formato'
+import { registrarBusqueda } from '../utils/estadisticas'
 
 function EstadoHoy({ puesto }) {
   const hoy = estadoDeHoy(puesto)
@@ -98,6 +99,13 @@ export default function Inicio() {
   const hayBusqueda = texto.length >= 2
   const exactos = resultados.filter((r) => r.coincide).length
   const soloParecidos = resultados.length > 0 && exactos === 0
+
+  // Se registra la búsqueda cuando el cliente deja de escribir 1.5 s (no cada letra)
+  useEffect(() => {
+    if (buscando || texto.length < 3) return
+    const timer = setTimeout(() => registrarBusqueda(texto, resultados.length, exactos), 1500)
+    return () => clearTimeout(timer)
+  }, [texto, buscando, resultados, exactos])
 
   return (
     <main className="pagina">

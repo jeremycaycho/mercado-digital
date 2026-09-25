@@ -8,6 +8,7 @@ import EditarPuesto from '../components/EditarPuesto'
 import MiQR from '../components/MiQR'
 import CatalogoModal from '../components/CatalogoModal'
 import AbrirDia from '../components/AbrirDia'
+import TuSemana from '../components/TuSemana'
 import InsigniaVerificado from '../components/InsigniaVerificado'
 import { useEsAdmin } from '../hooks/useEsAdmin'
 import CrearPuesto from '../components/CrearPuesto'
@@ -222,6 +223,8 @@ export default function Panel({ usuario }) {
           </div>
         </section>
       )}
+
+      <TuSemana puestoId={puesto.id} />
 
       <button className="btn-principal" onClick={() => setVerCatalogo(true)}>
         Elegir productos del catálogo

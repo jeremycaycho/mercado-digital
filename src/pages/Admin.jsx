@@ -7,8 +7,10 @@ import AdminPuestos from './admin/AdminPuestos'
 import AdminCatalogo from './admin/AdminCatalogo'
 import AdminSinonimos from './admin/AdminSinonimos'
 import AdminMercados from './admin/AdminMercados'
+import AdminEstadisticas from './admin/AdminEstadisticas'
 
 const PESTANAS = [
+  ['estadisticas', 'Estadísticas'],
   ['puestos', 'Puestos'],
   ['catalogo', 'Catálogo'],
   ['sinonimos', 'Sinónimos'],
@@ -64,6 +66,7 @@ export default function Admin() {
         ))}
       </nav>
 
+      {pestana === 'estadisticas' && <AdminEstadisticas />}
       {pestana === 'puestos' && <AdminPuestos usuarioId={sesion.user.id} avisar={avisar} />}
       {pestana === 'catalogo' && <AdminCatalogo avisar={avisar} />}
       {pestana === 'sinonimos' && <AdminSinonimos avisar={avisar} />}

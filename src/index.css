@@ -843,3 +843,48 @@ a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2
 .admin-mercado { margin-top: 14px; padding: 12px 14px; border: 2px solid var(--linea); border-radius: 12px; }
 .admin-mercado summary { cursor: pointer; font-size: 17px; }
 .admin-mercado .formulario { border: 0; padding: 12px 0 0; }
+
+/* ===== Paso 18: estadísticas ===== */
+.tu-semana {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 2px solid var(--tinta);
+  border-radius: 14px;
+}
+.tu-semana-numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tu-semana-numeros p { margin: 0; font-size: 14px; line-height: 1.25; color: var(--gris); }
+.tu-semana-numeros strong { display: block; font-family: var(--f-titulo); font-size: 30px; color: var(--tinta); }
+.oportunidades { display: grid; gap: 8px; padding-top: 12px; border-top: 1px dashed var(--linea); font-size: 15px; }
+.chip-oportunidad { background: #FFFBEA; color: var(--tinta); border: 1px solid var(--cartulina); }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+.stat { padding: 12px; background: var(--verde-claro); border-radius: 12px; }
+.stat strong { display: block; font-family: var(--f-titulo); font-size: 28px; line-height: 1.1; }
+.stat span { font-size: 14px; color: var(--gris); }
+
+.barras { display: flex; align-items: flex-end; gap: 4px; height: 150px; padding: 8px 0 0; overflow-x: auto; }
+.barra { flex: 1 0 18px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; }
+.barra-relleno { width: 100%; min-height: 2px; background: var(--verde); border-radius: 4px 4px 0 0; }
+.barra-valor { font-size: 11px; color: var(--gris); }
+.barra-dia { font-size: 11px; color: var(--gris); }
+
+.ranking { margin: 0; padding: 0; list-style: none; counter-reset: puesto; }
+.ranking li {
+  counter-increment: puesto;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--linea);
+}
+.ranking li span::before { content: counter(puesto) '. '; color: var(--gris); }
+.ranking .badge-hoy::before { content: none; }
+
+.tabla-contenedor { overflow-x: auto; }
+.tabla { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tabla th, .tabla td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--linea); }
+.tabla th { color: var(--gris); font-size: 13px; }
+.tabla td:not(:first-child), .tabla th:not(:first-child) { text-align: right; }
+.tabla a { color: var(--verde); font-weight: 700; }

@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
 import MapaMercado from '../components/MapaMercado'
 import InsigniaVerificado from '../components/InsigniaVerificado'
+import { registrarEvento } from '../utils/estadisticas'
 import { ubicacion, linkWhatsApp, estadoDeHoy, tieneCoordenadas } from '../utils/formato'
 
 const ORDEN = { disponible: 0, pocos: 1, agotado: 2 }
@@ -24,6 +25,7 @@ export default function Puesto() {
         if (!data) return setCarga('noexiste')
         setPuesto(data)
         setCarga('listo')
+        registrarEvento('vista_puesto', data.id, data.owner_id)
       })
   }, [id])
 
@@ -114,6 +116,7 @@ export default function Puesto() {
             href={`https://www.google.com/maps/dir/?api=1&destination=${puesto.lat},${puesto.lng}`}
             target="_blank"
             rel="noreferrer"
+            onClick={() => registrarEvento('como_llegar', puesto.id, puesto.owner_id)}
           >
             Cómo llegar con Google Maps
           </a>
@@ -122,7 +125,7 @@ export default function Puesto() {
       </section>
 
       {wa && (
-        <a className="btn-wa btn-wa-fijo" href={wa} target="_blank" rel="noreferrer">
+        <a className="btn-wa btn-wa-fijo" href={wa} target="_blank" rel="noreferrer" onClick={() => registrarEvento('whatsapp', puesto.id, puesto.owner_id)}>
           Escribir al puesto por WhatsApp
         </a>
       )}
