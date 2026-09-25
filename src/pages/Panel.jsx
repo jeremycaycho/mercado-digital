@@ -7,6 +7,7 @@ import CapturaFoto from '../components/CapturaFoto'
 import EditarPuesto from '../components/EditarPuesto'
 import MiQR from '../components/MiQR'
 import CatalogoModal from '../components/CatalogoModal'
+import AbrirDia from '../components/AbrirDia'
 import CrearPuesto from '../components/CrearPuesto'
 import NuevoProducto from '../components/NuevoProducto'
 import ProductoEditable from '../components/ProductoEditable'
@@ -79,6 +80,17 @@ export default function Panel({ usuario }) {
       { estado_hoy: valor, estado_hoy_fecha: hoyLima() },
       valor === 'abierto' ? 'Marcado: abierto hoy' : 'Marcado: cerrado hoy'
     )
+
+  async function abrirDia(reponer) {
+    const { data, error } = await supabase.rpc('abrir_dia', { p_puesto: puesto.id, p_reponer: reponer })
+    if (error) {
+      setAviso('No se pudo abrir el día. Revisa tu conexión e intenta de nuevo.')
+      return
+    }
+    await cargar()
+    setAviso(null)
+    avisar(`¡Listo! Tu puesto está abierto y tus ${data} productos están al día.`)
+  }
 
   async function agregar(nuevo) {
     const { data, error } = await supabase
@@ -154,8 +166,10 @@ export default function Panel({ usuario }) {
 
       {aviso && <p className="aviso-error">{aviso}</p>}
 
+      {!hoy && <AbrirDia productos={productos} onAbrir={abrirDia} onNoAbro={() => marcarHoy('cerrado')} />}
+
       <section>
-        <h2 className="subtitulo">¿Tu puesto abre hoy?</h2>
+        <h2 className="subtitulo">{hoy ? 'Tu puesto hoy' : '¿Tu puesto abre hoy?'}</h2>
         <div className="selector-estado" role="group" aria-label="Estado del puesto hoy">
           <button
             className={`opcion opcion-disponible ${hoy === 'abierto' ? 'activa' : ''}`}
@@ -172,7 +186,7 @@ export default function Panel({ usuario }) {
             Cerrado hoy
           </button>
         </div>
-        {!hoy && <p className="nota">Aún no marcas si abres hoy. Tus clientes lo verán en tu página.</p>}
+        {hoy && <p className="nota">Si cambias de idea durante el día, puedes cambiarlo aquí.</p>}
       </section>
 
       {editando ? (
