@@ -57,7 +57,7 @@ async function descargarQR(m) {
     url: `${LEGAL.sitio}/?mercado=${m.id}`,
     nombre: m.nombre,
     ubicacion: m.distrito,
-    lineas: ['¿Buscas algo? Escanea y mira', 'qué puesto lo tiene y a cuánto'],
+    lema: ['¿Buscas algo? Escanea y mira', 'qué puesto lo tiene y a cuánto'],
   })
   const enlace = document.createElement('a')
   enlace.href = lienzo.toDataURL('image/png')

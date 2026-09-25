@@ -20,7 +20,7 @@ function partirLineas(ctx, texto, anchoMax) {
 }
 
 // Dibuja el cartel del puesto (1080 x 1350, formato vertical para imprimir o compartir)
-export async function dibujarCartel(canvas, { url, nombre, ubicacion, mercado, lineas = ['Escanea y mira mis productos', 'y precios del día'] }) {
+export async function dibujarCartel(canvas, { url, nombre, ubicacion, mercado, lema = ['Escanea y mira mis productos', 'y precios del día'] }) {
   await document.fonts?.ready
   const W = 1080
   const H = 1350
@@ -80,7 +80,7 @@ export async function dibujarCartel(canvas, { url, nombre, ubicacion, mercado, l
 
   ctx.fillStyle = C.tinta
   ctx.font = `800 46px ${TITULO}`
-  lineas.slice(0, 2).forEach((l, i) => ctx.fillText(l, W / 2, 1180 + i * 56))
+  lema.slice(0, 2).forEach((l, i) => ctx.fillText(l, W / 2, 1180 + i * 56))
 
   ctx.fillStyle = C.gris
   ctx.font = `400 28px ${TEXTO}`

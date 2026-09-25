@@ -1,4 +1,6 @@
+/* Siempre en claro: evita que Chrome oscurezca la app por su cuenta */
 :root {
+  color-scheme: only light;
   --tinta: #16241C;
   --verde: #0E6B41;
   --verde-claro: #E3F1E8;
