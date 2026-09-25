@@ -672,3 +672,79 @@ a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2
   box-shadow: 2px 2px 0 var(--tinta);
 }
 .leaflet-container { font-family: var(--f-texto); }
+
+/* ===== Paso 15: catálogo y otros nombres ===== */
+.ancho-completo { width: 100%; margin-top: 10px; }
+
+.falta-precio { color: var(--ambar); }
+.falta-precio input { border-color: var(--cartulina); background: #FFFBEA; }
+.aviso-precio {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  background: #FFFBEA;
+  border-left: 4px solid var(--cartulina);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.otros-nombres { font-size: 15px; }
+.otros-nombres summary { cursor: pointer; color: var(--gris); padding: 4px 0; }
+.otros-nombres[open] { display: grid; gap: 6px; }
+.otros-nombres input {
+  width: 100%;
+  font: inherit;
+  font-size: 17px;
+  padding: 10px 12px;
+  border: 2px solid var(--linea);
+  border-radius: 10px;
+}
+
+/* Catálogo */
+.catalogo-caja { padding: 0; gap: 0; height: min(92vh, 720px); grid-template-rows: auto 1fr auto; overflow: hidden; }
+.catalogo-cabecera { display: grid; gap: 10px; padding: 16px 16px 10px; border-bottom: 1px solid var(--linea); }
+.catalogo-cabecera .subtitulo { margin: 0; }
+.catalogo-buscar {
+  width: 100%;
+  font: inherit;
+  font-size: 17px;
+  padding: 10px 12px;
+  border: 2px solid var(--linea);
+  border-radius: 10px;
+}
+.catalogo-rubros { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px; padding: 0 16px 2px; scrollbar-width: none; }
+.catalogo-rubros::-webkit-scrollbar { display: none; }
+.chip-rubro {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 5px;
+  background: #fff;
+  color: var(--tinta);
+  border: 2px solid var(--linea);
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.chip-rubro.activa { border-color: var(--verde); background: var(--verde-claro); color: var(--verde); }
+.chip-rubro-icono { width: 26px; height: 26px; border-radius: 50%; }
+
+.catalogo-lista { list-style: none; margin: 0; padding: 6px 16px; overflow-y: auto; }
+.catalogo-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--linea);
+  cursor: pointer;
+}
+.catalogo-item input { width: 22px; height: 22px; accent-color: var(--verde); }
+.catalogo-item.marcado .catalogo-nombre { color: var(--verde); }
+.catalogo-item.deshabilitado { opacity: 0.5; cursor: default; }
+.catalogo-nombre { font-weight: 700; }
+.catalogo-detalle { color: var(--gris); font-size: 14px; font-weight: 400; }
+.catalogo-pie { display: grid; gap: 4px; padding: 12px 16px 16px; border-top: 1px solid var(--linea); background: #fff; }
+.catalogo-pie .btn-principal { margin-top: 0; }
+.catalogo-pie .enlace { justify-self: center; padding: 6px; }

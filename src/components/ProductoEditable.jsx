@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import CapturaFoto from './CapturaFoto'
-import { haceCuanto, esAntiguo } from '../utils/formato'
+import { haceCuanto, esAntiguo, separarNombres } from '../utils/formato'
 
 const OPCIONES = [
   ['disponible', 'Hay'],
@@ -11,6 +11,13 @@ const OPCIONES = [
 export default function ProductoEditable({ producto, usuarioId, onCambiar, onEliminar }) {
   const [precio, setPrecio] = useState(producto.precio ?? '')
   const [errorFoto, setErrorFoto] = useState(null)
+  const [otros, setOtros] = useState((producto.otros_nombres ?? []).join(', '))
+
+  function guardarOtros() {
+    const lista = separarNombres(otros)
+    if (lista.join('|') === (producto.otros_nombres ?? []).join('|')) return
+    onCambiar({ otros_nombres: lista })
+  }
 
   function guardarPrecio() {
     if (String(precio) === String(producto.precio ?? '')) return
@@ -58,8 +65,8 @@ export default function ProductoEditable({ producto, usuarioId, onCambiar, onEli
         ))}
       </div>
 
-      <label className="campo-precio">
-        Precio en S/ por {producto.unidad}
+      <label className={`campo-precio ${producto.precio == null ? 'falta-precio' : ''}`}>
+        {producto.precio == null ? `Pon tu precio por ${producto.unidad}` : `Precio en S/ por ${producto.unidad}`}
         <input
           type="number"
           inputMode="decimal"
@@ -71,6 +78,21 @@ export default function ProductoEditable({ producto, usuarioId, onCambiar, onEli
           onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
         />
       </label>
+
+      <details className="otros-nombres">
+        <summary>
+          Otros nombres{producto.otros_nombres?.length ? `: ${producto.otros_nombres.join(', ')}` : ' (opcional)'}
+        </summary>
+        <input
+          value={otros}
+          onChange={(e) => setOtros(e.target.value)}
+          onBlur={guardarOtros}
+          onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+          placeholder="Ej: gallina, pollo beneficiado"
+          aria-label={`Otros nombres de ${producto.nombre}`}
+        />
+        <span className="nota sin-margen">Cómo le dicen tus clientes, separado por comas.</span>
+      </details>
     </li>
   )
 }

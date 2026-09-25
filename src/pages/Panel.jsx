@@ -6,6 +6,7 @@ import { ubicacion, estadoDeHoy, hoyLima } from '../utils/formato'
 import CapturaFoto from '../components/CapturaFoto'
 import EditarPuesto from '../components/EditarPuesto'
 import MiQR from '../components/MiQR'
+import CatalogoModal from '../components/CatalogoModal'
 import CrearPuesto from '../components/CrearPuesto'
 import NuevoProducto from '../components/NuevoProducto'
 import ProductoEditable from '../components/ProductoEditable'
@@ -21,6 +22,7 @@ export default function Panel({ usuario }) {
   const [toast, setToast] = useState(null)
   const [editando, setEditando] = useState(false)
   const [verQR, setVerQR] = useState(false)
+  const [verCatalogo, setVerCatalogo] = useState(false)
   const avisar = (texto) => setToast({ texto, id: Date.now() })
   const cerrarToast = useCallback(() => setToast(null), [])
 
@@ -53,6 +55,7 @@ export default function Panel({ usuario }) {
     setAviso(null)
     if ('foto_url' in cambios) avisar('Foto guardada')
     else if ('precio' in cambios) avisar('Precio guardado')
+    else if ('otros_nombres' in cambios) avisar('Otros nombres guardados')
     else if (cambios.estado) avisar(`Marcado como "${{ disponible: 'Hay', pocos: 'Pocos', agotado: 'Agotado' }[cambios.estado]}"`)
     return true
   }
@@ -90,6 +93,21 @@ export default function Panel({ usuario }) {
     setProductos((lista) => [...lista, data].sort(porNombre))
     setAviso(null)
     avisar('Producto agregado')
+    return true
+  }
+
+  async function agregarVarios(lista) {
+    const { data, error } = await supabase
+      .from('productos')
+      .insert(lista.map((p) => ({ ...p, puesto_id: puesto.id })))
+      .select()
+    if (error) {
+      setAviso('No se pudieron agregar los productos. Intenta de nuevo.')
+      return false
+    }
+    setProductos((actual) => [...actual, ...data].sort(porNombre))
+    setAviso(null)
+    avisar(`${data.length} ${data.length === 1 ? 'producto agregado' : 'productos agregados'}. Ahora ponles precio.`)
     return true
   }
 
@@ -182,10 +200,22 @@ export default function Panel({ usuario }) {
         </section>
       )}
 
+      <button className="btn-principal" onClick={() => setVerCatalogo(true)}>
+        Elegir productos del catálogo
+      </button>
       <NuevoProducto onAgregar={agregar} />
 
       <h2 className="subtitulo">Tus productos ({productos.length})</h2>
-      {productos.length === 0 && <p className="vacio">Agrega tu primer producto para que los clientes te encuentren.</p>}
+      {productos.length === 0 && (
+        <p className="vacio">
+          Aún no tienes productos. Toca "Elegir productos del catálogo" y marca lo que vendes: es más rápido que escribirlos uno por uno.
+        </p>
+      )}
+      {productos.some((p) => p.precio == null) && (
+        <p className="aviso-precio">
+          {productos.filter((p) => p.precio == null).length} productos sin precio. Los clientes verán "Consultar" hasta que lo pongas.
+        </p>
+      )}
       <ul className="lista">
         {productos.map((p) => (
           <ProductoEditable
@@ -199,6 +229,14 @@ export default function Panel({ usuario }) {
       </ul>
 
       {verQR && <MiQR puesto={puesto} onCerrar={() => setVerQR(false)} />}
+      {verCatalogo && (
+        <CatalogoModal
+          rubroInicial={puesto.rubro}
+          productosActuales={productos}
+          onAgregar={agregarVarios}
+          onCerrar={() => setVerCatalogo(false)}
+        />
+      )}
 
       <Toast mensaje={toast} onCerrar={cerrarToast} />
     </main>

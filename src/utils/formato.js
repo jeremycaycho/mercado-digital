@@ -56,3 +56,11 @@ export const estadoDeHoy = (puesto) =>
 
 export const METODOS_PAGO = ['Efectivo', 'Yape', 'Plin', 'Tarjeta']
 export const RUBROS = ['Abarrotes', 'Verduras', 'Frutas', 'Carnes', 'Pollo', 'Pescado', 'Menestras', 'Lácteos', 'Otros']
+
+// Para comparar textos sin tildes ni mayúsculas: "Limón " -> "limon"
+export const normalizarTexto = (t) =>
+  (t ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim()
+
+// "gallina, pollo beneficiado" -> ['gallina', 'pollo beneficiado']
+export const separarNombres = (texto) =>
+  [...new Set((texto ?? '').split(',').map((t) => t.trim()).filter(Boolean))]
