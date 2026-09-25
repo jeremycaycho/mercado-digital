@@ -17,7 +17,7 @@ export default function GuiaVendedor({ puesto, productos, onEditar, onCatalogo, 
   if (hechas === tareas.length) return null
 
   return (
-    <section className="guia" aria-labelledby="titulo-guia">
+    <section className="guia" aria-labelledby="titulo-guia" data-guia="guia-puesto">
       <div className="guia-cabecera">
         <h2 id="titulo-guia" className="subtitulo sin-margen">Completa tu puesto</h2>
         <span className="guia-contador">{hechas} de {tareas.length}</span>

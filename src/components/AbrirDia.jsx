@@ -20,7 +20,7 @@ export default function AbrirDia({ productos, onAbrir, onNoAbro }) {
   }
 
   return (
-    <section className="abrir-dia" aria-labelledby="titulo-abrir-dia">
+    <section className="abrir-dia" aria-labelledby="titulo-abrir-dia" data-guia="abrir-dia">
       <h2 id="titulo-abrir-dia" className="abrir-dia-titulo">{saludo()}. ¿Abres hoy?</h2>
       <p className="abrir-dia-texto">
         Con un toque avisas a tus clientes que estás atendiendo y confirmas que tus precios siguen vigentes.

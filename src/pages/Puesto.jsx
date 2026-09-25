@@ -7,6 +7,12 @@ import InsigniaVerificado from '../components/InsigniaVerificado'
 import { registrarEvento } from '../utils/estadisticas'
 import Esqueleto from '../components/Esqueleto'
 import ReportarPuesto from '../components/ReportarPuesto'
+import ControlCantidad from '../components/ControlCantidad'
+import BarraPedido from '../components/BarraPedido'
+import PedidoModal from '../components/PedidoModal'
+import Recorrido, { useRecorrido } from '../components/Recorrido'
+import { usePedido } from '../hooks/usePedido'
+import { GUIA_PUESTO } from '../legal/guias'
 import { ubicacion, linkWhatsApp, estadoDeHoy, tieneCoordenadas } from '../utils/formato'
 
 const ORDEN = { disponible: 0, pocos: 1, agotado: 2 }
@@ -15,6 +21,9 @@ export default function Puesto() {
   const { id } = useParams()
   const [puesto, setPuesto] = useState(null)
   const [carga, setCarga] = useState('cargando')
+  const [verPedido, setVerPedido] = useState(false)
+  const { items, fijar, sincronizar, vaciar } = usePedido(id)
+  const guia = useRecorrido('puesto', carga === 'listo')
 
   useEffect(() => {
     supabase
@@ -26,10 +35,11 @@ export default function Puesto() {
         if (error) return setCarga('error')
         if (!data) return setCarga('noexiste')
         setPuesto(data)
+        sincronizar(data.productos)
         setCarga('listo')
         registrarEvento('vista_puesto', data.id, data.owner_id)
       })
-  }, [id])
+  }, [id, sincronizar])
 
   if (carga === 'cargando') {
     return (
@@ -105,13 +115,26 @@ export default function Puesto() {
       )}
 
       <h2 className="subtitulo">{productos.length} productos</h2>
-      <ul className="lista">
+      {puesto.whatsapp && productos.length > 0 && (
+        <p className="nota">Toca "Agregar", elige la cantidad y envía tu pedido por WhatsApp.</p>
+      )}
+      <ul className="lista" data-guia="productos">
         {productos.map((p) => (
-          <ProductoFila key={p.id} {...p} rubro={puesto.rubro} whatsapp={puesto.whatsapp} />
+          <ProductoFila
+            key={p.id}
+            {...p}
+            rubro={puesto.rubro}
+            whatsapp={puesto.whatsapp}
+            accion={
+              puesto.whatsapp ? (
+                <ControlCantidad producto={p} cantidad={items[p.id]?.cantidad} onCambiar={(c) => fijar(p, c)} />
+              ) : undefined
+            }
+          />
         ))}
       </ul>
 
-      <section id="plano" className="seccion-plano">
+      <section id="plano" className="seccion-plano" data-guia="como-llegar">
         <h2 className="subtitulo">Cómo llegar</h2>
         {puesto.referencia && <p className="nota plano-indicaciones"><strong>Referencia:</strong> {puesto.referencia}</p>}
         {!tieneCoordenadas(puesto) && puesto.mercados?.indicaciones && (
@@ -134,11 +157,16 @@ export default function Puesto() {
 
       <ReportarPuesto puesto={puesto} />
 
-      {wa && (
-        <a className="btn-wa btn-wa-fijo" href={wa} target="_blank" rel="noreferrer" onClick={() => registrarEvento('whatsapp', puesto.id, puesto.owner_id)}>
+      {wa && Object.keys(items).length === 0 && (
+        <a className="btn-wa btn-wa-fijo" href={wa} target="_blank" rel="noreferrer" data-guia="whatsapp" onClick={() => registrarEvento('whatsapp', puesto.id, puesto.owner_id)}>
           Escribir al puesto por WhatsApp
         </a>
       )}
+      <BarraPedido items={items} onAbrir={() => setVerPedido(true)} />
+      {verPedido && (
+        <PedidoModal puesto={puesto} items={items} onFijar={fijar} onVaciar={vaciar} onCerrar={() => setVerPedido(false)} />
+      )}
+      <Recorrido pasos={GUIA_PUESTO} activo={guia.activo} onTerminar={guia.terminar} />
     </main>
   )
 }

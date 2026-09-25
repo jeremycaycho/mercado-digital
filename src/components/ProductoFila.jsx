@@ -4,7 +4,7 @@ import InsigniaVerificado from './InsigniaVerificado'
 import { formatoPrecio, ubicacion, linkWhatsApp, ESTADOS, haceCuanto, esAntiguo } from '../utils/formato'
 import { registrarEvento } from '../utils/estadisticas'
 
-export default function ProductoFila({ nombre, precio, unidad, estado, foto_url, updated_at, rubro, puesto, puesto_id, whatsapp }) {
+export default function ProductoFila({ nombre, precio, unidad, estado, foto_url, updated_at, rubro, puesto, puesto_id, whatsapp, accion }) {
   const est = ESTADOS[estado] ?? ESTADOS.disponible
   const wa = linkWhatsApp(whatsapp, `Hola, vi en Mercado Digital que tienes ${nombre}. ¿Aún hay?`)
 
@@ -37,11 +37,11 @@ export default function ProductoFila({ nombre, precio, unidad, estado, foto_url,
           <span className="precio">{formatoPrecio(precio)}</span>
           <span className="unidad">x {unidad}</span>
         </div>
-        {wa && estado !== 'agotado' && (
+        {accion ?? (wa && estado !== 'agotado' && (
           <a className="btn-wa" href={wa} target="_blank" rel="noreferrer" onClick={() => registrarEvento('whatsapp', puesto?.id ?? puesto_id)}>
             Preguntar
           </a>
-        )}
+        ))}
       </div>
     </li>
   )

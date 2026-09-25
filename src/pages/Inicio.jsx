@@ -10,6 +10,8 @@ import { leer, guardar, borrar } from '../utils/almacen'
 import Esqueleto from '../components/Esqueleto'
 import Intro, { introVista } from '../components/Intro'
 import SelectorMercado from '../components/SelectorMercado'
+import Recorrido, { useRecorrido } from '../components/Recorrido'
+import { GUIA_INICIO } from '../legal/guias'
 
 function EstadoHoy({ puesto }) {
   const hoy = estadoDeHoy(puesto)
@@ -47,6 +49,7 @@ export default function Inicio() {
   const [mercadoId, setMercadoId] = useState(null)
   const [verIntro, setVerIntro] = useState(() => !introVista())
   const [cuentaEliminada] = useState(() => params.get('cuenta') === 'eliminada')
+  const guia = useRecorrido('inicio', !verIntro && puestos?.length > 0)
 
   // Mercados disponibles
   useEffect(() => {
@@ -178,6 +181,7 @@ export default function Inicio() {
         </p>
         <h1>¿Qué estás buscando?</h1>
         <input
+          data-guia="buscador"
           type="search"
           className="buscador"
           placeholder="Ej: limón, arroz, pollo"
@@ -233,7 +237,7 @@ export default function Inicio() {
       ) : (
         <section>
           {categorias.length > 1 && (
-            <nav className="categorias" aria-label="Categorías">
+            <nav className="categorias" aria-label="Categorías" data-guia="categorias">
               <button
                 className={`categoria ${!rubroActivo ? 'activa' : ''}`}
                 aria-pressed={!rubroActivo}
@@ -256,7 +260,7 @@ export default function Inicio() {
             </nav>
           )}
 
-          <Link to={`/plano${mercadoId ? `?mercado=${mercadoId}` : ''}`} className="enlace-plano">Ver mapa del mercado</Link>
+          <Link to={`/plano${mercadoId ? `?mercado=${mercadoId}` : ''}`} className="enlace-plano" data-guia="mapa">Ver mapa del mercado</Link>
           <h2 className="subtitulo">
             {rubroActivo
               ? `${puestosVisibles.length} ${puestosVisibles.length === 1 ? 'puesto' : 'puestos'} de ${rubroActivo}`
@@ -272,7 +276,7 @@ export default function Inicio() {
               <button className="enlace" onClick={() => elegirRubro(null)}>Ver todos</button>
             </p>
           )}
-          <ul className="lista-puestos">
+          <ul className="lista-puestos" data-guia="lista-puestos">
             {puestosVisibles.map((p) => (
               <li key={p.id}>
                 <Link to={`/puesto/${p.id}`} className="puesto-fila">
@@ -300,6 +304,7 @@ export default function Inicio() {
       <p className="pie">
         ¿Tienes un puesto? <Link to="/vendedor">Regístralo gratis</Link>
       </p>
+      <Recorrido pasos={GUIA_INICIO} activo={guia.activo} onTerminar={guia.terminar} />
     </main>
   )
 }

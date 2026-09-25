@@ -12,6 +12,8 @@ import TuSemana from '../components/TuSemana'
 import GuiaVendedor from '../components/GuiaVendedor'
 import MiCuenta from '../components/MiCuenta'
 import Esqueleto from '../components/Esqueleto'
+import Recorrido, { useRecorrido } from '../components/Recorrido'
+import { GUIA_VENDEDOR } from '../legal/guias'
 import InsigniaVerificado from '../components/InsigniaVerificado'
 import { useEsAdmin } from '../hooks/useEsAdmin'
 import CrearPuesto from '../components/CrearPuesto'
@@ -31,6 +33,7 @@ export default function Panel({ usuario }) {
   const [verQR, setVerQR] = useState(false)
   const [verCatalogo, setVerCatalogo] = useState(false)
   const esAdmin = useEsAdmin(usuario.id)
+  const guia = useRecorrido('vendedor', estado === 'listo')
   const avisar = (texto) => setToast({ texto, id: Date.now() })
   const cerrarToast = useCallback(() => setToast(null), [])
 
@@ -171,7 +174,7 @@ export default function Panel({ usuario }) {
         )}
         <div className="cabecera-acciones">
           <Link to={`/puesto/${puesto.id}`} className="enlace-claro">Ver como cliente</Link>
-          <button className="enlace-claro" onClick={() => setVerQR(true)}>Mi QR</button>
+          <button className="enlace-claro" onClick={() => setVerQR(true)} data-guia="mi-qr">Mi QR</button>
           {esAdmin && <Link to="/admin" className="enlace-claro">Administrar</Link>}
           <button className="enlace-claro" onClick={salir}>Salir</button>
         </div>
@@ -181,7 +184,7 @@ export default function Panel({ usuario }) {
 
       {!hoy && <AbrirDia productos={productos} onAbrir={abrirDia} onNoAbro={() => marcarHoy('cerrado')} />}
 
-      <section>
+      <section data-guia="estado-hoy">
         <h2 className="subtitulo">{hoy ? 'Tu puesto hoy' : '¿Tu puesto abre hoy?'}</h2>
         <div className="selector-estado" role="group" aria-label="Estado del puesto hoy">
           <button
@@ -242,7 +245,7 @@ export default function Panel({ usuario }) {
 
       <TuSemana puestoId={puesto.id} />
 
-      <button className="btn-principal" onClick={() => setVerCatalogo(true)}>
+      <button className="btn-principal" onClick={() => setVerCatalogo(true)} data-guia="catalogo">
         Elegir productos del catálogo
       </button>
       <NuevoProducto onAgregar={agregar} />
@@ -259,9 +262,10 @@ export default function Panel({ usuario }) {
         </p>
       )}
       <ul className="lista">
-        {productos.map((p) => (
+        {productos.map((p, i) => (
           <ProductoEditable
             key={p.id}
+            guia={i === 0}
             producto={p}
             usuarioId={usuario.id}
             onCambiar={(cambios) => actualizar(p.id, cambios)}
@@ -281,6 +285,7 @@ export default function Panel({ usuario }) {
       )}
 
       <MiCuenta usuario={usuario} puesto={puesto} productos={productos} />
+      <Recorrido pasos={GUIA_VENDEDOR} activo={guia.activo} onTerminar={guia.terminar} />
 
       <Toast mensaje={toast} onCerrar={cerrarToast} />
     </main>

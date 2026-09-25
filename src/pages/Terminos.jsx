@@ -16,7 +16,8 @@ export default function Terminos() {
         {LEGAL.app} es una vitrina digital gratuita que muestra información de puestos de mercados y ferias:
         productos, precios referenciales, disponibilidad, ubicación y un medio de contacto. <strong>No vendemos
         productos, no cobramos, no recibimos pagos ni realizamos entregas.</strong> Toda compra se acuerda
-        directamente entre el cliente y el vendedor.
+        directamente entre el cliente y el vendedor, y <strong>el pago se hace siempre en persona</strong>, al recoger
+        o recibir el pedido. La aplicación nunca pide pagos por adelantado ni muestra números para transferir.
       </p>
 
       <h2>2. Quién puede usarla</h2>

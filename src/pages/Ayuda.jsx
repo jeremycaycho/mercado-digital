@@ -1,11 +1,13 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { borrar } from '../utils/almacen'
 import PaginaLegal from '../components/PaginaLegal'
 import { LEGAL } from '../legal/datosLegales'
 
 const PREGUNTAS_CLIENTES = [
   ['¿Tengo que descargar algo o registrarme?', 'No. Escanea el QR o abre el enlace y ya puedes buscar. Si quieres, desde el menú del navegador puedes "Agregar a pantalla de inicio" para tenerla como una app.'],
   ['¿Los precios son exactos?', 'Son los que publica cada vendedor y pueden cambiar durante el día. Fíjate en "Actualizado hace…" y, si quieres estar seguro, toca "Preguntar" para escribirle por WhatsApp.'],
-  ['¿Puedo comprar desde la app?', 'No. La app te dice quién tiene lo que buscas, a cuánto y dónde está. La compra la haces directamente con el vendedor.'],
+  ['¿Cómo hago un pedido?', 'En el puesto toca "Agregar", elige cantidades y toca "Enviar pedido por WhatsApp". El vendedor te confirmará el total.'],
+  ['¿Cómo pago?', 'Siempre en persona, al recoger o recibir tu pedido, con efectivo, Yape, Plin o tarjeta según lo que acepte el puesto. Nunca pagues por adelantado.'],
   ['¿Qué significa "Verificado"?', 'Que un encargado de Mercado Digital visitó ese puesto y confirmó que existe.'],
   ['Encontré algo falso o inapropiado', 'Entra al puesto y toca "Reportar este puesto" al final de la página. Lo revisaremos.'],
 ]
@@ -29,8 +31,14 @@ function Preguntas({ lista }) {
 }
 
 export default function Ayuda() {
+  const navegar = useNavigate()
+  const verGuiaCliente = () => {
+    ;['md-intro-vista', 'md-guia-inicio', 'md-guia-puesto'].forEach(borrar)
+    navegar('/')
+  }
   return (
     <PaginaLegal titulo="Ayuda">
+      <button className="btn-principal" onClick={verGuiaCliente}>Ver la guía de la app otra vez</button>
       <h2>Para clientes</h2>
       <Preguntas lista={PREGUNTAS_CLIENTES} />
       <h2>Para vendedores</h2>

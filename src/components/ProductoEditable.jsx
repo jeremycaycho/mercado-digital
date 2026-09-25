@@ -8,7 +8,7 @@ const OPCIONES = [
   ['agotado', 'Agotado'],
 ]
 
-export default function ProductoEditable({ producto, usuarioId, onCambiar, onEliminar }) {
+export default function ProductoEditable({ producto, usuarioId, onCambiar, onEliminar, guia = false }) {
   const [precio, setPrecio] = useState(producto.precio ?? '')
   const [errorFoto, setErrorFoto] = useState(null)
   const [otros, setOtros] = useState((producto.otros_nombres ?? []).join(', '))
@@ -27,7 +27,7 @@ export default function ProductoEditable({ producto, usuarioId, onCambiar, onEli
   }
 
   return (
-    <li className="editable">
+    <li className="editable" data-guia={guia ? 'producto-editable' : undefined}>
       <div className="editable-fila">
         <CapturaFoto
           className="foto-miniatura"

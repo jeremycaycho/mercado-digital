@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import { repetirGuia } from './Recorrido'
 
 // Derechos del vendedor: descargar sus datos (acceso) y eliminar su cuenta (cancelación)
 export default function MiCuenta({ usuario, puesto, productos }) {
@@ -51,6 +52,7 @@ export default function MiCuenta({ usuario, puesto, productos }) {
       <summary>Mi cuenta</summary>
       <p className="nota">Ingresaste como {usuario.email}.</p>
       <button className="btn-secundario ancho-completo" onClick={descargarDatos}>Descargar mis datos</button>
+      <button className="btn-secundario ancho-completo" onClick={() => { window.scrollTo(0, 0); repetirGuia() }}>Ver la guía otra vez</button>
       <button className="btn-secundario ancho-completo" onClick={() => supabase.auth.signOut()}>Cerrar sesión</button>
       <p className="nota">
         <Link to="/terminos">Términos</Link> · <Link to="/privacidad">Privacidad</Link> · <Link to="/ayuda">Ayuda</Link>

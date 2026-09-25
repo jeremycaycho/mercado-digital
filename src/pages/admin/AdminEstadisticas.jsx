@@ -53,6 +53,7 @@ export default function AdminEstadisticas() {
             <Numero valor={datos.vistas} texto="visitas a puestos" />
             <Numero valor={datos.whatsapp} texto="mensajes por WhatsApp" />
             <Numero valor={datos.como_llegar} texto="pidieron cómo llegar" />
+            <Numero valor={datos.pedidos} texto="pedidos enviados" />
           </div>
 
           <h2 className="subtitulo">Búsquedas por día</h2>
@@ -105,7 +106,7 @@ export default function AdminEstadisticas() {
             <div className="tabla-contenedor">
               <table className="tabla">
                 <thead>
-                  <tr><th>Puesto</th><th>Visitas</th><th>WhatsApp</th><th>Llegar</th></tr>
+                  <tr><th>Puesto</th><th>Visitas</th><th>WhatsApp</th><th>Llegar</th><th>Pedidos</th></tr>
                 </thead>
                 <tbody>
                   {datos.puestos_top.map((p) => (
@@ -114,6 +115,7 @@ export default function AdminEstadisticas() {
                       <td>{p.vistas}</td>
                       <td>{p.whatsapp}</td>
                       <td>{p.como_llegar}</td>
+                      <td>{p.pedidos}</td>
                     </tr>
                   ))}
                 </tbody>

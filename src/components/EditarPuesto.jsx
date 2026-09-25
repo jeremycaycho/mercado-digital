@@ -16,6 +16,7 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
     whatsapp: wa.length === 11 && wa.startsWith('51') ? wa.slice(2) : wa,
     horario: puesto.horario ?? '',
     metodos_pago: puesto.metodos_pago ?? [],
+    nota_pedidos: puesto.nota_pedidos ?? '',
   })
   const [guardando, setGuardando] = useState(false)
 
@@ -38,6 +39,7 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
       descripcion: form.descripcion.trim() || null,
       horario: form.horario.trim() || null,
       referencia: form.referencia.trim() || null,
+      nota_pedidos: form.nota_pedidos.trim() || null,
       whatsapp: digitos.length === 9 ? `51${digitos}` : digitos || null,
     })
     setGuardando(false)
@@ -86,7 +88,7 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
         <input type="tel" inputMode="numeric" value={form.whatsapp} onChange={cambiar('whatsapp')} placeholder="Ej: 987654321" />
       </label>
       <fieldset className="grupo-pagos">
-        <legend>¿Cómo te pueden pagar?</legend>
+        <legend>¿Cómo te pueden pagar en tu puesto?</legend>
         <div className="chips">
           {METODOS_PAGO.map((m) => (
             <label key={m} className={`chip-check ${form.metodos_pago.includes(m) ? 'marcado' : ''}`}>
@@ -96,6 +98,11 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
           ))}
         </div>
       </fieldset>
+      <p className="nota sin-margen">Los clientes te pagan en persona, al recoger o recibir su pedido.</p>
+      <label>
+        Nota para pedidos (opcional)
+        <input value={form.nota_pedidos} onChange={cambiar('nota_pedidos')} placeholder="Ej: Delivery gratis en la cuadra desde S/ 20" maxLength={200} />
+      </label>
       <div className="acciones">
         <button type="button" className="btn-secundario" onClick={onCerrar}>Cancelar</button>
         <button className="btn-principal" disabled={guardando}>{guardando ? 'Guardando…' : 'Guardar cambios'}</button>

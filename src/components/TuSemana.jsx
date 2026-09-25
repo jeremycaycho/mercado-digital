@@ -15,12 +15,13 @@ export default function TuSemana({ puestoId }) {
   const numero = (n) => Number(n ?? 0)
 
   return (
-    <section className="tu-semana" aria-labelledby="titulo-semana">
+    <section className="tu-semana" aria-labelledby="titulo-semana" data-guia="tu-semana">
       <h2 id="titulo-semana" className="subtitulo sin-margen">Tus últimos 7 días</h2>
       <div className="tu-semana-numeros">
         <p><strong>{numero(datos.vistas)}</strong> vieron tu puesto</p>
         <p><strong>{numero(datos.whatsapp)}</strong> te escribieron</p>
         <p><strong>{numero(datos.como_llegar)}</strong> pidieron cómo llegar</p>
+        <p><strong>{numero(datos.pedidos)}</strong> te enviaron un pedido</p>
       </div>
       {oportunidades.length > 0 && (
         <div className="oportunidades">
