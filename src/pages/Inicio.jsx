@@ -1,14 +1,31 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import ProductoFila from '../components/ProductoFila'
 import IconoRubro from '../components/IconoRubro'
-import { ubicacion, estadoDeHoy } from '../utils/formato'
+import { ubicacion, estadoDeHoy, RUBROS } from '../utils/formato'
 
 function EstadoHoy({ puesto }) {
   const hoy = estadoDeHoy(puesto)
   if (!hoy) return null
   return <span className={`badge-hoy badge-${hoy}`}>{hoy === 'abierto' ? 'Abierto hoy' : 'Cerrado hoy'}</span>
+}
+
+// Abiertos hoy primero, sin marcar al medio, cerrados hoy al final
+const PESO_HOY = { abierto: 0, cerrado: 2 }
+const pesoHoy = (p) => PESO_HOY[estadoDeHoy(p)] ?? 1
+
+function IconoTodos() {
+  return (
+    <div className="icono-rubro categoria-icono" style={{ background: '#E3F1E8', color: '#0E6B41' }} aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinejoin="round">
+        <rect x="10" y="10" width="12" height="12" rx="3" />
+        <rect x="26" y="10" width="12" height="12" rx="3" />
+        <rect x="10" y="26" width="12" height="12" rx="3" />
+        <rect x="26" y="26" width="12" height="12" rx="3" />
+      </svg>
+    </div>
+  )
 }
 
 export default function Inicio() {
@@ -17,6 +34,30 @@ export default function Inicio() {
   const [buscando, setBuscando] = useState(false)
   const [puestos, setPuestos] = useState([])
   const [error, setError] = useState(null)
+  const [params, setParams] = useSearchParams()
+  const rubroActivo = params.get('rubro')
+
+  // Solo se muestran las categorías que tienen al menos un puesto
+  const categorias = useMemo(() => {
+    const conteo = {}
+    for (const p of puestos) conteo[p.rubro] = (conteo[p.rubro] ?? 0) + 1
+    return Object.keys(conteo).sort((a, b) => {
+      const ia = RUBROS.indexOf(a)
+      const ib = RUBROS.indexOf(b)
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
+    }).map((r) => ({ rubro: r, cantidad: conteo[r] }))
+  }, [puestos])
+
+  const puestosVisibles = useMemo(
+    () =>
+      puestos
+        .filter((p) => !rubroActivo || p.rubro === rubroActivo)
+        .sort((a, b) => pesoHoy(a) - pesoHoy(b) || a.nombre.localeCompare(b.nombre)),
+    [puestos, rubroActivo]
+  )
+
+  // La categoría queda en la dirección (?rubro=Verduras): el botón "atrás" y los enlaces funcionan
+  const elegirRubro = (rubro) => setParams(rubro ? { rubro } : {}, { replace: true })
 
   // Carga la lista de puestos
   useEffect(() => {
@@ -109,9 +150,43 @@ export default function Inicio() {
         </section>
       ) : (
         <section>
-          <h2 className="subtitulo">Puestos del mercado</h2>
+          {categorias.length > 1 && (
+            <nav className="categorias" aria-label="Categorías">
+              <button
+                className={`categoria ${!rubroActivo ? 'activa' : ''}`}
+                aria-pressed={!rubroActivo}
+                onClick={() => elegirRubro(null)}
+              >
+                <IconoTodos />
+                <span>Todos</span>
+              </button>
+              {categorias.map(({ rubro }) => (
+                <button
+                  key={rubro}
+                  className={`categoria ${rubroActivo === rubro ? 'activa' : ''}`}
+                  aria-pressed={rubroActivo === rubro}
+                  onClick={() => elegirRubro(rubroActivo === rubro ? null : rubro)}
+                >
+                  <IconoRubro rubro={rubro} className="categoria-icono" />
+                  <span>{rubro}</span>
+                </button>
+              ))}
+            </nav>
+          )}
+
+          <h2 className="subtitulo">
+            {rubroActivo
+              ? `${puestosVisibles.length} ${puestosVisibles.length === 1 ? 'puesto' : 'puestos'} de ${rubroActivo}`
+              : 'Puestos del mercado'}
+          </h2>
+          {rubroActivo && puestosVisibles.length === 0 && (
+            <p className="vacio">
+              Todavía no hay puestos de {rubroActivo}.{' '}
+              <button className="enlace" onClick={() => elegirRubro(null)}>Ver todos</button>
+            </p>
+          )}
           <ul className="lista-puestos">
-            {puestos.map((p) => (
+            {puestosVisibles.map((p) => (
               <li key={p.id}>
                 <Link to={`/puesto/${p.id}`} className="puesto-fila">
                   {p.foto_url ? (

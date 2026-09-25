@@ -520,3 +520,34 @@ a.btn-principal { color: #fff; }
 
 /* ===== Paso 11: acceso ===== */
 .formulario > .enlace { justify-self: center; padding: 6px; }
+
+/* ===== Paso 12: categorías ===== */
+.categorias {
+  display: flex;
+  gap: 10px;
+  margin: 0 -16px;
+  padding: 18px 16px 6px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.categorias::-webkit-scrollbar { display: none; }
+.categoria {
+  flex-shrink: 0;
+  width: 86px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  background: #fff;
+  color: var(--tinta);
+  border: 2px solid var(--linea);
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+.categoria.activa { border-color: var(--verde); background: var(--verde-claro); color: var(--verde); }
+.categoria-icono { width: 46px; height: 46px; border-radius: 12px; }
