@@ -85,7 +85,8 @@ export default function Puesto() {
         <h1>{puesto.nombre}</h1>
         {puesto.descripcion && <p className="puesto-desc">{puesto.descripcion}</p>}
         <p className="puesto-donde">
-          {ubicacion(puesto) && <><strong>{ubicacion(puesto)}</strong> en </>}
+          {ubicacion(puesto) && <strong>{ubicacion(puesto)}</strong>}
+          {ubicacion(puesto) && puesto.mercados?.nombre && ' en '}
           {puesto.mercados?.nombre}
           {puesto.referencia && <span className="puesto-referencia">{puesto.referencia}</span>}
           <a href="#plano" className="enlace-plano">Ver en el mapa</a>
@@ -152,7 +153,7 @@ export default function Puesto() {
             Cómo llegar con Google Maps
           </a>
         )}
-        <Link to={`/plano?mercado=${puesto.mercado_id}`} className="enlace-plano">Ver todos los puestos en el mapa</Link>
+        <Link to={puesto.mercado_id ? `/plano?mercado=${puesto.mercado_id}` : '/plano'} className="enlace-plano">Ver todos los negocios en el mapa</Link>
       </section>
 
       <ReportarPuesto puesto={puesto} />

@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../../supabaseClient'
 import { dibujarCartel } from '../../utils/cartelQR'
 import { LEGAL } from '../../legal/datosLegales'
+import ElegirUbicacion from '../../components/ElegirUbicacion'
 
-const VACIO = { nombre: '', distrito: '', direccion: '', indicaciones: '' }
+const VACIO = { nombre: '', distrito: '', direccion: '', indicaciones: '', lat: null, lng: null }
 
 function FormMercado({ inicial, textoBoton, onGuardar }) {
   const [form, setForm] = useState({ ...VACIO, ...inicial })
@@ -19,6 +20,8 @@ function FormMercado({ inicial, textoBoton, onGuardar }) {
       distrito: form.distrito.trim() || null,
       direccion: form.direccion.trim() || null,
       indicaciones: form.indicaciones.trim() || null,
+      lat: form.lat ?? null,
+      lng: form.lng ?? null,
     }
     const ok = await onGuardar(limpio)
     setGuardando(false)
@@ -45,6 +48,11 @@ function FormMercado({ inicial, textoBoton, onGuardar }) {
         Indicaciones para llegar
         <textarea rows={2} value={form.indicaciones ?? ''} onChange={cambiar('indicaciones')} placeholder="Ej: Frente al parque, los domingos se extiende hasta la cuadra 5" />
       </label>
+      <fieldset className="grupo-pagos">
+        <legend>Centro del mercado en el mapa</legend>
+        <p className="nota sin-margen">Los negocios que se registren a menos de 400 m de este punto quedarán en este mercado automáticamente.</p>
+        <ElegirUbicacion lat={form.lat} lng={form.lng} onCambiar={(lat, lng) => setForm((f) => ({ ...f, lat, lng }))} />
+      </fieldset>
       <button className="btn-principal" disabled={guardando}>{guardando ? 'Guardando…' : textoBoton}</button>
     </form>
   )
@@ -72,10 +80,16 @@ export default function AdminMercados({ avisar }) {
   useEffect(() => {
     supabase
       .from('mercados')
-      .select('id, nombre, distrito, direccion, indicaciones, puestos(count)')
+      .select('id, nombre, distrito, direccion, indicaciones, lat, lng, puestos(count)')
       .order('created_at')
       .then(({ data, error }) => (error ? setError('No se pudieron cargar los mercados.') : setMercados(data)))
   }, [])
+
+  // Tras ubicar un mercado, los negocios cercanos que ya existían pasan a ese mercado
+  async function recalcular() {
+    const { data, error } = await supabase.rpc('reasignar_mercados')
+    if (!error) avisar(`Mercado guardado. ${data} negocios revisados según su ubicación.`)
+  }
 
   async function guardar(id, cambios) {
     const { error } = await supabase.from('mercados').update(cambios).eq('id', id)
@@ -85,17 +99,19 @@ export default function AdminMercados({ avisar }) {
     }
     setMercados((lista) => lista.map((m) => (m.id === id ? { ...m, ...cambios } : m)))
     avisar('Mercado guardado')
+    if (cambios.lat != null) recalcular()
     return true
   }
 
   async function crear(datos) {
-    const { data, error } = await supabase.from('mercados').insert(datos).select('id, nombre, distrito, direccion, indicaciones').single()
+    const { data, error } = await supabase.from('mercados').insert(datos).select('id, nombre, distrito, direccion, indicaciones, lat, lng').single()
     if (error) {
       setError('No se pudo crear el mercado.')
       return false
     }
     setMercados((lista) => [...lista, { ...data, puestos: [{ count: 0 }] }])
-    avisar(`${data.nombre} creado. Los vendedores ya pueden elegirlo al registrarse.`)
+    avisar(`${data.nombre} creado.`)
+    if (data.lat != null) recalcular()
     return true
   }
 
@@ -120,7 +136,7 @@ export default function AdminMercados({ avisar }) {
       ))}
 
       <h2 className="subtitulo">Nuevo mercado o feria</h2>
-      <p className="nota">Cuando la app llegue a otro lugar, créalo aquí. Los vendedores lo verán en la lista al registrar su puesto.</p>
+      <p className="nota">Cuando la app llegue a otro mercado o feria, créalo aquí y marca su centro en el mapa. Los negocios cercanos se agrupan solos.</p>
       <FormMercado textoBoton="Crear mercado" onGuardar={crear} />
     </section>
   )

@@ -38,7 +38,11 @@ export default function ElegirUbicacion({ lat, lng, onCambiar }) {
       colocar(e.latlng)
       avisar.current(redondear(e.latlng.lat), redondear(e.latlng.lng))
     })
+    // Si el mapa estaba oculto (por ejemplo, dentro de una sección plegable), se reajusta al mostrarse
+    const observador = new ResizeObserver(() => mapa.invalidateSize())
+    observador.observe(contenedor.current)
     return () => {
+      observador.disconnect()
       mapa.remove()
       mapaRef.current = null
       pinRef.current = null

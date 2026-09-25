@@ -11,6 +11,7 @@ import AbrirDia from '../components/AbrirDia'
 import TuSemana from '../components/TuSemana'
 import GuiaVendedor from '../components/GuiaVendedor'
 import MiCuenta from '../components/MiCuenta'
+import GoogleMapsNegocio from '../components/GoogleMapsNegocio'
 import Esqueleto from '../components/Esqueleto'
 import Recorrido, { useRecorrido } from '../components/Recorrido'
 import { GUIA_VENDEDOR } from '../legal/guias'
@@ -284,6 +285,7 @@ export default function Panel({ usuario }) {
         />
       )}
 
+      <GoogleMapsNegocio puesto={puesto} />
       <MiCuenta usuario={usuario} puesto={puesto} productos={productos} />
       <Recorrido pasos={GUIA_VENDEDOR} activo={guia.activo} onTerminar={guia.terminar} />
 

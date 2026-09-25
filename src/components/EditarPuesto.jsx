@@ -64,7 +64,7 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
         </select>
       </label>
       <label>
-        Calle, jirón o pasillo
+        Calle, jirón o avenida
         <input value={form.pasillo} onChange={cambiar('pasillo')} placeholder="Ej: Jr. Los Olivos, cuadra 3" />
       </label>
       <label>
@@ -76,7 +76,8 @@ export default function EditarPuesto({ puesto, onGuardar, onCerrar }) {
         <input value={form.referencia} onChange={cambiar('referencia')} placeholder="Ej: frente a la farmacia, toldo azul" maxLength={120} />
       </label>
       <fieldset className="grupo-pagos">
-        <legend>Ubicación en el mapa</legend>
+        <legend>Ubicación de tu negocio</legend>
+        <p className="nota sin-margen">¿Te mudaste? Toca el botón estando en el nuevo lugar, o mueve la estrella. Tu mercado se actualiza solo.</p>
         <ElegirUbicacion lat={form.lat} lng={form.lng} onCambiar={(lat, lng) => setForm((f) => ({ ...f, lat, lng }))} />
       </fieldset>
       <label>

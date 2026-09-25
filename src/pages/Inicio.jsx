@@ -19,6 +19,8 @@ function EstadoHoy({ puesto }) {
   return <span className={`badge-hoy badge-${hoy}`}>{hoy === 'abierto' ? 'Abierto hoy' : 'Cerrado hoy'}</span>
 }
 
+const TODOS = 'todos' // sin filtro de mercado: todos los negocios
+
 // Abiertos hoy primero, sin marcar al medio, cerrados hoy al final
 const PESO_HOY = { abierto: 0, cerrado: 2 }
 const pesoHoy = (p) => PESO_HOY[estadoDeHoy(p)] ?? 1
@@ -47,6 +49,7 @@ export default function Inicio() {
   const mercadoParam = params.get('mercado')
   const [mercados, setMercados] = useState(null)
   const [mercadoId, setMercadoId] = useState(null)
+  const [eligiendo, setEligiendo] = useState(false)
   const [verIntro, setVerIntro] = useState(() => !introVista())
   const [cuentaEliminada] = useState(() => params.get('cuenta') === 'eliminada')
   const guia = useRecorrido('inicio', !verIntro && puestos?.length > 0)
@@ -64,25 +67,27 @@ export default function Inicio() {
   useEffect(() => {
     if (!mercados) return
     const existe = (id) => mercados.some((m) => m.id === id)
-    const elegido = [mercadoParam, leer('md-mercado')].find((id) => id && existe(id)) ?? (mercados.length === 1 ? mercados[0].id : null)
+    const elegido = [mercadoParam, leer('md-mercado')].find((id) => id && existe(id)) ?? TODOS
     setMercadoId(elegido)
-    if (elegido) guardar('md-mercado', elegido)
+    if (elegido !== TODOS) guardar('md-mercado', elegido)
   }, [mercados, mercadoParam])
 
   const mercado = mercados?.find((m) => m.id === mercadoId)
 
-  const elegirMercado = (id) => {
-    guardar('md-mercado', id)
-    setParams({ mercado: id }, { replace: true })
-    setMercadoId(id)
-  }
+  const filtroMercado = mercadoId && mercadoId !== TODOS ? mercadoId : null
 
-  const cambiarMercado = () => {
-    borrar('md-mercado')
+  const elegirMercado = (id) => {
+    setEligiendo(false)
     setPuestos(null)
     setTermino('')
-    setParams({}, { replace: true })
-    setMercadoId(null)
+    if (id === TODOS) {
+      borrar('md-mercado')
+      setParams({}, { replace: true })
+    } else {
+      guardar('md-mercado', id)
+      setParams({ mercado: id }, { replace: true })
+    }
+    setMercadoId(id)
   }
 
   // Solo se muestran las categorías que tienen al menos un puesto
@@ -119,17 +124,18 @@ export default function Inicio() {
   // Carga los puestos del mercado actual
   useEffect(() => {
     if (!mercadoId) return
-    supabase
+    let consulta = supabase
       .from('puestos')
       .select('id, nombre, rubro, pasillo, numero_puesto, foto_url, estado_hoy, estado_hoy_fecha, verificado, productos(count)')
       .eq('activo', true)
-      .eq('mercado_id', mercadoId)
+    if (filtroMercado) consulta = consulta.eq('mercado_id', filtroMercado)
+    consulta
       .order('nombre')
       .then(({ data, error }) => {
         if (error) setError('No se pudieron cargar los puestos. Revisa tu conexión.')
         else setPuestos(data)
       })
-  }, [mercadoId])
+  }, [mercadoId, filtroMercado])
 
   // Búsqueda con pausa de 300 ms mientras el usuario escribe
   useEffect(() => {
@@ -141,7 +147,7 @@ export default function Inicio() {
     }
     setBuscando(true)
     const timer = setTimeout(async () => {
-      const { data, error } = await supabase.rpc('buscar_productos', { termino: t, p_mercado: mercadoId })
+      const { data, error } = await supabase.rpc('buscar_productos', { termino: t, p_mercado: filtroMercado })
       if (error) setError('La búsqueda falló. Intenta de nuevo.')
       else {
         setError(null)
@@ -150,7 +156,7 @@ export default function Inicio() {
       setBuscando(false)
     }, 300)
     return () => clearTimeout(timer)
-  }, [termino, mercadoId])
+  }, [termino, filtroMercado])
 
   const texto = termino.trim()
   const hayBusqueda = texto.length >= 2
@@ -160,14 +166,14 @@ export default function Inicio() {
   // Se registra la búsqueda cuando el cliente deja de escribir 1.5 s (no cada letra)
   useEffect(() => {
     if (buscando || texto.length < 3) return
-    const timer = setTimeout(() => registrarBusqueda(texto, resultados.length, exactos, mercadoId), 1500)
+    const timer = setTimeout(() => registrarBusqueda(texto, resultados.length, exactos, filtroMercado), 1500)
     return () => clearTimeout(timer)
-  }, [texto, buscando, resultados, exactos, mercadoId])
+  }, [texto, buscando, resultados, exactos, filtroMercado])
 
   if (verIntro) return <Intro onTerminar={() => setVerIntro(false)} />
 
-  if (mercados && mercados.length > 1 && !mercadoId) {
-    return <SelectorMercado mercados={mercados} onElegir={elegirMercado} />
+  if (eligiendo && mercados?.length) {
+    return <SelectorMercado mercados={mercados} actual={mercadoId} onElegir={elegirMercado} onCancelar={() => setEligiendo(false)} />
   }
 
   return (
@@ -175,8 +181,10 @@ export default function Inicio() {
       <header className="cabecera">
         <p className="mercado-nombre">
           {mercado ? mercado.nombre : 'Mercado Digital'}
-          {mercados?.length > 1 && (
-            <button className="enlace-claro cambiar-mercado" onClick={cambiarMercado}>Cambiar</button>
+          {mercados?.length > 0 && (
+            <button className="enlace-claro cambiar-mercado" onClick={() => setEligiendo(true)}>
+              {mercado ? 'Cambiar' : 'Elegir mercado'}
+            </button>
           )}
         </p>
         <h1>¿Qué estás buscando?</h1>
@@ -260,15 +268,15 @@ export default function Inicio() {
             </nav>
           )}
 
-          <Link to={`/plano${mercadoId ? `?mercado=${mercadoId}` : ''}`} className="enlace-plano" data-guia="mapa">Ver mapa del mercado</Link>
+          <Link to={`/plano${filtroMercado ? `?mercado=${filtroMercado}` : ''}`} className="enlace-plano" data-guia="mapa">Ver en el mapa</Link>
           <h2 className="subtitulo">
             {rubroActivo
               ? `${puestosVisibles.length} ${puestosVisibles.length === 1 ? 'puesto' : 'puestos'} de ${rubroActivo}`
-              : 'Puestos del mercado'}
+              : mercado ? 'Puestos del mercado' : 'Negocios'}
           </h2>
           {!puestos && !error && <Esqueleto filas={5} />}
           {puestos?.length === 0 && (
-            <p className="vacio">Este mercado todavía no tiene puestos registrados. ¡Pronto habrá más!</p>
+            <p className="vacio">Todavía no hay negocios registrados aquí. ¡Pronto habrá más!</p>
           )}
           {rubroActivo && puestos?.length > 0 && puestosVisibles.length === 0 && (
             <p className="vacio">

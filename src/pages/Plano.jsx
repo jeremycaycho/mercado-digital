@@ -2,31 +2,34 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import MapaMercado from '../components/MapaMercado'
-import { leer } from '../utils/almacen'
 
-// Mapa completo: /plano (primer mercado) o /plano?mercado=ID
+// Mapa: /plano (todos los negocios) o /plano?mercado=ID (solo ese mercado)
 export default function Plano() {
   const [params] = useSearchParams()
-  const [mercado, setMercado] = useState(undefined)
+  const id = params.get('mercado')
+  const [mercado, setMercado] = useState(id ? undefined : null)
 
   useEffect(() => {
-    const id = params.get('mercado') || leer('md-mercado')
-    let consulta = supabase.from('mercados').select('id, nombre, indicaciones')
-    consulta = id ? consulta.eq('id', id) : consulta.order('created_at').limit(1)
-    consulta.maybeSingle().then(({ data }) => setMercado(data ?? null))
-  }, [params])
+    if (!id) return setMercado(null)
+    supabase
+      .from('mercados')
+      .select('id, nombre, indicaciones')
+      .eq('id', id)
+      .maybeSingle()
+      .then(({ data }) => setMercado(data ?? null))
+  }, [id])
 
   return (
     <main className="pagina">
       <Link to="/" className="volver">Volver al buscador</Link>
-      {mercado === undefined && <p className="vacio">Cargando mapa…</p>}
-      {mercado === null && <p className="aviso-error">No encontramos ese mercado.</p>}
-      {mercado && (
+      {mercado === undefined ? (
+        <p className="vacio">Cargando mapa…</p>
+      ) : (
         <>
-          <h1 className="titulo-pagina">Mapa de {mercado.nombre}</h1>
-          {mercado.indicaciones && <p className="puesto-donde">{mercado.indicaciones}</p>}
-          <p className="nota">Toca un puesto para ver sus productos y precios.</p>
-          <MapaMercado mercadoId={mercado.id} alto={420} />
+          <h1 className="titulo-pagina">{mercado ? `Mapa de ${mercado.nombre}` : 'Mapa de negocios'}</h1>
+          {mercado?.indicaciones && <p className="puesto-donde">{mercado.indicaciones}</p>}
+          <p className="nota">Toca un negocio para ver sus productos y precios.</p>
+          <MapaMercado mercadoId={mercado?.id} alto={420} />
         </>
       )}
     </main>

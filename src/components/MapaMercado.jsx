@@ -10,13 +10,12 @@ export default function MapaMercado({ mercadoId, resaltarId, alto }) {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!mercadoId) return
-    supabase
+    let consulta = supabase
       .from('puestos')
       .select('id, nombre, rubro, pasillo, numero_puesto, lat, lng')
-      .eq('mercado_id', mercadoId)
       .eq('activo', true)
-      .then(({ data, error }) => (error ? setError(true) : setPuestos(data)))
+    if (mercadoId) consulta = consulta.eq('mercado_id', mercadoId)
+    consulta.then(({ data, error }) => (error ? setError(true) : setPuestos(data)))
   }, [mercadoId])
 
   // Se calculan una sola vez por carga, para que el mapa no se vuelva a dibujar sin necesidad

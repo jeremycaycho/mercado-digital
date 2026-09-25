@@ -74,7 +74,7 @@ export default function AdminPuestos({ usuarioId, avisar }) {
               {!p.activo && <span className="badge-hoy badge-cerrado">Oculto</span>}
             </div>
             <p className="nota sin-margen">
-              {p.rubro} en {p.mercados?.nombre}. {ubicacion(p) || 'Sin calle indicada'}.
+              {p.rubro}{p.mercados?.nombre ? ` en ${p.mercados.nombre}` : ' (negocio independiente)'}. {ubicacion(p) || 'Sin calle indicada'}.
             </p>
             {p.referencia && <p className="nota sin-margen">Referencia: {p.referencia}</p>}
             <p className="nota sin-margen">
