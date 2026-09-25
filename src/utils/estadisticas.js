@@ -16,10 +16,10 @@ function primeraVez(clave) {
 }
 
 // Nunca debe romper la app: si falla, se ignora en silencio
-export function registrarBusqueda(termino, resultados, exactos) {
+export function registrarBusqueda(termino, resultados, exactos, mercadoId = null) {
   const t = termino.trim().slice(0, 60)
   if (t.length < 3 || !primeraVez(`b:${t.toLowerCase()}`)) return
-  supabase.from('busquedas').insert({ termino: t, resultados, exactos }).then(() => {})
+  supabase.from('busquedas').insert({ termino: t, resultados, exactos, mercado_id: mercadoId }).then(() => {})
 }
 
 // tipo: 'vista_puesto' | 'whatsapp' | 'como_llegar'

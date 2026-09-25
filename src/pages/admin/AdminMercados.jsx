@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../supabaseClient'
+import { dibujarCartel } from '../../utils/cartelQR'
+import { LEGAL } from '../../legal/datosLegales'
 
 const VACIO = { nombre: '', distrito: '', direccion: '', indicaciones: '' }
 
@@ -46,6 +48,21 @@ function FormMercado({ inicial, textoBoton, onGuardar }) {
       <button className="btn-principal" disabled={guardando}>{guardando ? 'Guardando…' : textoBoton}</button>
     </form>
   )
+}
+
+// Cartel con el QR que abre la app directamente en ese mercado
+async function descargarQR(m) {
+  const lienzo = document.createElement('canvas')
+  await dibujarCartel(lienzo, {
+    url: `${LEGAL.sitio}/?mercado=${m.id}`,
+    nombre: m.nombre,
+    ubicacion: m.distrito,
+    lineas: ['¿Buscas algo? Escanea y mira', 'qué puesto lo tiene y a cuánto'],
+  })
+  const enlace = document.createElement('a')
+  enlace.href = lienzo.toDataURL('image/png')
+  enlace.download = `qr-${m.nombre.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.png`
+  enlace.click()
 }
 
 export default function AdminMercados({ avisar }) {
@@ -94,7 +111,11 @@ export default function AdminMercados({ avisar }) {
             <span className="nota sin-margen"> {m.puestos?.[0]?.count ?? 0} puestos</span>
           </summary>
           <FormMercado inicial={m} textoBoton="Guardar cambios" onGuardar={(c) => guardar(m.id, c)} />
-          <Link to={`/plano?mercado=${m.id}`} className="enlace-plano">Ver mapa de este mercado</Link>
+          <div className="admin-acciones">
+            <button className="btn-secundario" onClick={() => descargarQR(m)}>Descargar QR del mercado</button>
+            <Link to={`/?mercado=${m.id}`} className="btn-secundario centrado">Abrir en la app</Link>
+            <Link to={`/plano?mercado=${m.id}`} className="btn-secundario centrado">Ver mapa</Link>
+          </div>
         </details>
       ))}
 

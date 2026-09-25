@@ -888,3 +888,157 @@ a.plano-celda:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2
 .tabla th { color: var(--gris); font-size: 13px; }
 .tabla td:not(:first-child), .tabla th:not(:first-child) { text-align: right; }
 .tabla a { color: var(--verde); font-weight: 700; }
+
+/* ===== Paso 18.5: experiencia profesional ===== */
+.ancla { scroll-margin-top: 12px; }
+
+/* Pie de página */
+.pie-pagina { max-width: 640px; margin: 40px auto 0; padding: 20px 16px 120px; border-top: 1px solid var(--linea); text-align: center; color: var(--gris); font-size: 14px; }
+.pie-pagina nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin-bottom: 8px; }
+.pie-pagina a { color: var(--tinta); font-weight: 700; }
+.pie-pagina p { margin: 0; }
+
+/* Esqueletos de carga */
+.esqueleto-fila { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--linea); }
+.esqueleto-textos { flex: 1; display: grid; gap: 8px; align-content: center; }
+.esqueleto-bloque {
+  display: block;
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ECEFED 25%, #F6F8F7 50%, #ECEFED 75%);
+  background-size: 200% 100%;
+  animation: brillo 1.3s ease-in-out infinite;
+}
+.esqueleto-imagen { width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0; }
+.esqueleto-portada { height: 180px; margin: 16px 0; border-radius: 12px; }
+@keyframes brillo { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Sin conexión */
+.sin-conexion {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 10px 16px;
+  background: var(--tinta);
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Pantallas de error y 404 */
+.pantalla-estado { display: grid; justify-items: center; gap: 10px; padding-top: 60px; text-align: center; }
+.pantalla-estado .btn-principal { max-width: 320px; }
+.estado-icono {
+  width: 84px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  background: var(--cartulina);
+  color: var(--tinta);
+  font: 800 38px var(--f-titulo);
+  border-radius: 6px;
+  box-shadow: 5px 5px 0 var(--tinta);
+  transform: rotate(-4deg);
+}
+
+/* Presentación (intro) */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 16px;
+  padding: 16px 24px 32px;
+  background: var(--verde);
+  color: #fff;
+  text-align: center;
+}
+.intro-saltar { justify-self: end; background: none; border: 0; color: #fff; font-weight: 700; font-size: 16px; padding: 8px; cursor: pointer; opacity: 0.85; }
+.intro-contenido { align-self: center; display: grid; justify-items: center; gap: 12px; max-width: 420px; margin: 0 auto; animation: entra 0.35s ease-out; }
+.intro-contenido h1 { margin: 0; font-size: clamp(28px, 8vw, 38px); }
+.intro-contenido p { margin: 0; font-size: 18px; opacity: 0.92; }
+.intro-dibujo { width: 180px; height: 180px; display: grid; place-items: center; background: rgba(255, 255, 255, 0.1); border-radius: 50%; }
+.intro-dibujo svg { width: 130px; height: 130px; }
+.intro-escribe { stroke-dasharray: 30; stroke-dashoffset: 30; animation: escribe 1.4s ease-in-out infinite; }
+.intro-etiqueta { transform-origin: 60px 60px; animation: balanceo 1.6s ease-in-out infinite; }
+.intro-pin { transform-origin: 60px 100px; animation: rebote 1.2s ease-in-out infinite; }
+.intro-puntos { display: flex; justify-content: center; gap: 10px; }
+.intro-puntos button { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.4); cursor: pointer; }
+.intro-puntos button.activo { width: 28px; border-radius: 6px; background: var(--cartulina); }
+.intro-boton { max-width: 420px; justify-self: center; margin-top: 0; background: var(--cartulina); color: var(--tinta); font-size: 19px; }
+@keyframes entra { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes escribe { 0% { stroke-dashoffset: 30; } 60%, 100% { stroke-dashoffset: 0; } }
+@keyframes balanceo { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes rebote { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* Selector de mercado */
+.cambiar-mercado { margin-left: 10px; font-size: 14px; }
+.mercado-opcion {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 16px;
+  margin-top: 10px;
+  background: #fff;
+  color: var(--tinta);
+  border: 2px solid var(--linea);
+  border-radius: 12px;
+  text-align: left;
+  font-size: 18px;
+  cursor: pointer;
+}
+.mercado-opcion span { color: var(--gris); font-size: 15px; }
+.mercado-opcion:hover { border-color: var(--verde); }
+
+/* Reportar */
+.enlace-reportar { display: block; margin: 28px auto 0; color: var(--gris); font-weight: 400; font-size: 14px; }
+.reporte-form { display: grid; gap: 12px; }
+.reporte-form .btn-principal { margin-top: 0; }
+.reporte-form .enlace { justify-self: center; }
+.opcion-radio { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; cursor: pointer; }
+.opcion-radio input { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--verde); }
+.campo-etiqueta { display: grid; gap: 4px; font-weight: 700; font-size: 15px; }
+.consentimiento { font-size: 14px; font-weight: 400; line-height: 1.4; }
+.consentimiento a { color: var(--verde); font-weight: 700; }
+
+/* Guía del vendedor */
+.guia { display: grid; gap: 10px; margin-top: 20px; padding: 16px; background: #FFFBEA; border: 2px solid var(--cartulina); border-radius: 14px; }
+.guia-cabecera { display: flex; justify-content: space-between; align-items: baseline; }
+.guia-contador { font-weight: 700; color: var(--ambar); }
+.guia-barra { height: 10px; background: #fff; border-radius: 999px; overflow: hidden; border: 1px solid var(--cartulina); }
+.guia-barra span { display: block; height: 100%; background: var(--verde); border-radius: 999px; transition: width 0.4s ease; }
+.guia-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.guia-lista li { display: flex; align-items: center; gap: 10px; }
+.guia-lista li.hecho { color: var(--gris); text-decoration: line-through; }
+.guia-check { width: 22px; height: 22px; flex-shrink: 0; display: grid; place-items: center; border: 2px solid var(--verde); border-radius: 6px; color: #fff; font-weight: 800; font-size: 14px; }
+.guia-lista li.hecho .guia-check { background: var(--verde); }
+.guia-pista { color: var(--gris); font-size: 14px; }
+.guia .enlace { text-align: left; }
+
+/* Mi cuenta */
+.mi-cuenta { margin-top: 32px; padding: 14px 16px; border: 2px solid var(--linea); border-radius: 12px; }
+.mi-cuenta summary { font-weight: 700; font-size: 17px; cursor: pointer; }
+.mi-cuenta[open] { display: grid; gap: 10px; }
+.mi-cuenta .ancho-completo { margin-top: 0; }
+.mi-cuenta .btn-eliminar { justify-self: start; padding-left: 0; }
+.mi-cuenta .nota a { color: var(--verde); font-weight: 700; }
+.zona-peligro { display: grid; gap: 10px; padding: 14px; background: #FBE9E7; border-radius: 10px; }
+.btn-peligro { flex: 1; padding: 12px 16px; background: var(--rojo); color: #fff; border: 0; border-radius: 12px; font-weight: 700; cursor: pointer; }
+.btn-peligro:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* Páginas legales y ayuda */
+.texto-legal { line-height: 1.6; }
+.texto-legal h2 { margin: 28px 0 8px; font-family: var(--f-titulo); font-size: 20px; }
+.texto-legal ul { padding-left: 20px; }
+.texto-legal li { margin-bottom: 6px; }
+.texto-legal a { color: var(--verde); font-weight: 700; }
+.pregunta { padding: 12px 0; border-bottom: 1px solid var(--linea); }
+.pregunta summary { font-weight: 700; cursor: pointer; }
+.pregunta p { margin: 8px 0 0; color: var(--gris); }
+
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto-bloque, .intro-contenido, .intro-escribe, .intro-etiqueta, .intro-pin { animation: none; }
+  .intro-escribe { stroke-dashoffset: 0; }
+}

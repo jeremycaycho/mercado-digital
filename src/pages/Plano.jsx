@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import MapaMercado from '../components/MapaMercado'
+import { leer } from '../utils/almacen'
 
 // Mapa completo: /plano (primer mercado) o /plano?mercado=ID
 export default function Plano() {
@@ -9,7 +10,7 @@ export default function Plano() {
   const [mercado, setMercado] = useState(undefined)
 
   useEffect(() => {
-    const id = params.get('mercado')
+    const id = params.get('mercado') || leer('md-mercado')
     let consulta = supabase.from('mercados').select('id, nombre, indicaciones')
     consulta = id ? consulta.eq('id', id) : consulta.order('created_at').limit(1)
     consulta.maybeSingle().then(({ data }) => setMercado(data ?? null))

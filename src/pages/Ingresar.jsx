@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { traducirError } from '../utils/errores'
+import { LEGAL } from '../legal/datosLegales'
 
 const TITULOS = {
   ingresar: 'Ingresa a tu puesto',
@@ -15,6 +16,7 @@ export default function Ingresar() {
   const [clave, setClave] = useState('')
   const [mensaje, setMensaje] = useState(null)
   const [enviando, setEnviando] = useState(false)
+  const [acepta, setAcepta] = useState(false)
 
   const cambiarModo = (nuevo) => {
     setModo(nuevo)
@@ -37,7 +39,11 @@ export default function Ingresar() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password: clave,
-        options: { emailRedirectTo: `${origen}/vendedor` },
+        options: {
+          emailRedirectTo: `${origen}/vendedor`,
+          // Constancia del consentimiento (Ley 29733): qué versión aceptó y cuándo
+          data: { acepta_terminos_version: LEGAL.version, acepta_terminos_en: new Date().toISOString(), mayor_de_edad: true },
+        },
       })
       if (error) setMensaje({ tipo: 'error', texto: traducirError(error.message) })
       else if (!data.session)
@@ -92,6 +98,16 @@ export default function Ingresar() {
               required
             />
             {modo === 'crear' && <span className="nota sin-margen">Mínimo 8 caracteres.</span>}
+          </label>
+        )}
+        {modo === 'crear' && (
+          <label className="opcion-radio consentimiento">
+            <input type="checkbox" checked={acepta} onChange={(e) => setAcepta(e.target.checked)} required />
+            <span>
+              Soy mayor de 18 años y acepto los{' '}
+              <Link to="/terminos" target="_blank">Términos y condiciones</Link> y la{' '}
+              <Link to="/privacidad" target="_blank">Política de privacidad</Link>. Entiendo que los datos de mi puesto serán públicos.
+            </span>
           </label>
         )}
         {mensaje && <p className={mensaje.tipo === 'error' ? 'aviso-error' : 'aviso-ok'}>{mensaje.texto}</p>}

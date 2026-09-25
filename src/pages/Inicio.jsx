@@ -6,6 +6,10 @@ import IconoRubro from '../components/IconoRubro'
 import InsigniaVerificado from '../components/InsigniaVerificado'
 import { ubicacion, estadoDeHoy, RUBROS } from '../utils/formato'
 import { registrarBusqueda } from '../utils/estadisticas'
+import { leer, guardar, borrar } from '../utils/almacen'
+import Esqueleto from '../components/Esqueleto'
+import Intro, { introVista } from '../components/Intro'
+import SelectorMercado from '../components/SelectorMercado'
 
 function EstadoHoy({ puesto }) {
   const hoy = estadoDeHoy(puesto)
@@ -34,15 +38,54 @@ export default function Inicio() {
   const [termino, setTermino] = useState('')
   const [resultados, setResultados] = useState([])
   const [buscando, setBuscando] = useState(false)
-  const [puestos, setPuestos] = useState([])
+  const [puestos, setPuestos] = useState(null)
   const [error, setError] = useState(null)
   const [params, setParams] = useSearchParams()
   const rubroActivo = params.get('rubro')
+  const mercadoParam = params.get('mercado')
+  const [mercados, setMercados] = useState(null)
+  const [mercadoId, setMercadoId] = useState(null)
+  const [verIntro, setVerIntro] = useState(() => !introVista())
+  const [cuentaEliminada] = useState(() => params.get('cuenta') === 'eliminada')
+
+  // Mercados disponibles
+  useEffect(() => {
+    supabase
+      .from('mercados')
+      .select('id, nombre, distrito')
+      .order('created_at')
+      .then(({ data, error }) => (error ? setError('No se pudo cargar la información. Revisa tu conexión.') : setMercados(data ?? [])))
+  }, [])
+
+  // Mercado actual: el del enlace o QR, luego el último elegido, o el único que exista
+  useEffect(() => {
+    if (!mercados) return
+    const existe = (id) => mercados.some((m) => m.id === id)
+    const elegido = [mercadoParam, leer('md-mercado')].find((id) => id && existe(id)) ?? (mercados.length === 1 ? mercados[0].id : null)
+    setMercadoId(elegido)
+    if (elegido) guardar('md-mercado', elegido)
+  }, [mercados, mercadoParam])
+
+  const mercado = mercados?.find((m) => m.id === mercadoId)
+
+  const elegirMercado = (id) => {
+    guardar('md-mercado', id)
+    setParams({ mercado: id }, { replace: true })
+    setMercadoId(id)
+  }
+
+  const cambiarMercado = () => {
+    borrar('md-mercado')
+    setPuestos(null)
+    setTermino('')
+    setParams({}, { replace: true })
+    setMercadoId(null)
+  }
 
   // Solo se muestran las categorías que tienen al menos un puesto
   const categorias = useMemo(() => {
     const conteo = {}
-    for (const p of puestos) conteo[p.rubro] = (conteo[p.rubro] ?? 0) + 1
+    for (const p of puestos ?? []) conteo[p.rubro] = (conteo[p.rubro] ?? 0) + 1
     return Object.keys(conteo).sort((a, b) => {
       const ia = RUBROS.indexOf(a)
       const ib = RUBROS.indexOf(b)
@@ -52,27 +95,38 @@ export default function Inicio() {
 
   const puestosVisibles = useMemo(
     () =>
-      puestos
+      (puestos ?? [])
         .filter((p) => !rubroActivo || p.rubro === rubroActivo)
         .sort((a, b) => pesoHoy(a) - pesoHoy(b) || Number(b.verificado) - Number(a.verificado) || a.nombre.localeCompare(b.nombre)),
     [puestos, rubroActivo]
   )
 
   // La categoría queda en la dirección (?rubro=Verduras): el botón "atrás" y los enlaces funcionan
-  const elegirRubro = (rubro) => setParams(rubro ? { rubro } : {}, { replace: true })
+  const elegirRubro = (rubro) =>
+    setParams(
+      (actual) => {
+        const nuevo = new URLSearchParams(actual)
+        nuevo.delete('cuenta')
+        rubro ? nuevo.set('rubro', rubro) : nuevo.delete('rubro')
+        return nuevo
+      },
+      { replace: true }
+    )
 
-  // Carga la lista de puestos
+  // Carga los puestos del mercado actual
   useEffect(() => {
+    if (!mercadoId) return
     supabase
       .from('puestos')
       .select('id, nombre, rubro, pasillo, numero_puesto, foto_url, estado_hoy, estado_hoy_fecha, verificado, productos(count)')
       .eq('activo', true)
+      .eq('mercado_id', mercadoId)
       .order('nombre')
       .then(({ data, error }) => {
         if (error) setError('No se pudieron cargar los puestos. Revisa tu conexión.')
         else setPuestos(data)
       })
-  }, [])
+  }, [mercadoId])
 
   // Búsqueda con pausa de 300 ms mientras el usuario escribe
   useEffect(() => {
@@ -84,7 +138,7 @@ export default function Inicio() {
     }
     setBuscando(true)
     const timer = setTimeout(async () => {
-      const { data, error } = await supabase.rpc('buscar_productos', { termino: t })
+      const { data, error } = await supabase.rpc('buscar_productos', { termino: t, p_mercado: mercadoId })
       if (error) setError('La búsqueda falló. Intenta de nuevo.')
       else {
         setError(null)
@@ -93,7 +147,7 @@ export default function Inicio() {
       setBuscando(false)
     }, 300)
     return () => clearTimeout(timer)
-  }, [termino])
+  }, [termino, mercadoId])
 
   const texto = termino.trim()
   const hayBusqueda = texto.length >= 2
@@ -103,14 +157,25 @@ export default function Inicio() {
   // Se registra la búsqueda cuando el cliente deja de escribir 1.5 s (no cada letra)
   useEffect(() => {
     if (buscando || texto.length < 3) return
-    const timer = setTimeout(() => registrarBusqueda(texto, resultados.length, exactos), 1500)
+    const timer = setTimeout(() => registrarBusqueda(texto, resultados.length, exactos, mercadoId), 1500)
     return () => clearTimeout(timer)
-  }, [texto, buscando, resultados, exactos])
+  }, [texto, buscando, resultados, exactos, mercadoId])
+
+  if (verIntro) return <Intro onTerminar={() => setVerIntro(false)} />
+
+  if (mercados && mercados.length > 1 && !mercadoId) {
+    return <SelectorMercado mercados={mercados} onElegir={elegirMercado} />
+  }
 
   return (
     <main className="pagina">
       <header className="cabecera">
-        <p className="mercado-nombre">Mercado Digital</p>
+        <p className="mercado-nombre">
+          {mercado ? mercado.nombre : 'Mercado Digital'}
+          {mercados?.length > 1 && (
+            <button className="enlace-claro cambiar-mercado" onClick={cambiarMercado}>Cambiar</button>
+          )}
+        </p>
         <h1>¿Qué estás buscando?</h1>
         <input
           type="search"
@@ -122,6 +187,9 @@ export default function Inicio() {
         />
       </header>
 
+      {cuentaEliminada && (
+        <p className="aviso-ok">Tu cuenta y tu puesto fueron eliminados. Gracias por haber usado Mercado Digital.</p>
+      )}
       {error && <p className="aviso-error">{error}</p>}
 
       {hayBusqueda ? (
@@ -188,13 +256,17 @@ export default function Inicio() {
             </nav>
           )}
 
-          <Link to="/plano" className="enlace-plano">Ver mapa del mercado</Link>
+          <Link to={`/plano${mercadoId ? `?mercado=${mercadoId}` : ''}`} className="enlace-plano">Ver mapa del mercado</Link>
           <h2 className="subtitulo">
             {rubroActivo
               ? `${puestosVisibles.length} ${puestosVisibles.length === 1 ? 'puesto' : 'puestos'} de ${rubroActivo}`
               : 'Puestos del mercado'}
           </h2>
-          {rubroActivo && puestosVisibles.length === 0 && (
+          {!puestos && !error && <Esqueleto filas={5} />}
+          {puestos?.length === 0 && (
+            <p className="vacio">Este mercado todavía no tiene puestos registrados. ¡Pronto habrá más!</p>
+          )}
+          {rubroActivo && puestos?.length > 0 && puestosVisibles.length === 0 && (
             <p className="vacio">
               Todavía no hay puestos de {rubroActivo}.{' '}
               <button className="enlace" onClick={() => elegirRubro(null)}>Ver todos</button>
@@ -226,7 +298,7 @@ export default function Inicio() {
       )}
 
       <p className="pie">
-        ¿Tienes un puesto? <Link to="/vendedor">Ingresa como vendedor</Link>
+        ¿Tienes un puesto? <Link to="/vendedor">Regístralo gratis</Link>
       </p>
     </main>
   )

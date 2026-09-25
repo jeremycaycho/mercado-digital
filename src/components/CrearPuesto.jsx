@@ -69,6 +69,7 @@ export default function CrearPuesto({ usuario, onCreado, onSalir }) {
           <input value={form.referencia} onChange={cambiar('referencia')} placeholder="Ej: frente a la farmacia, toldo azul" />
         </label>
         <p className="nota sin-margen">Después podrás marcar tu puesto en el mapa desde "Editar datos del puesto".</p>
+        <p className="nota sin-margen">Estos datos, incluido tu WhatsApp, se mostrarán a los clientes. Tu correo nunca es público.</p>
         <label>
           WhatsApp del puesto
           <input type="tel" inputMode="numeric" value={form.whatsapp} onChange={cambiar('whatsapp')} placeholder="Ej: 987654321" />

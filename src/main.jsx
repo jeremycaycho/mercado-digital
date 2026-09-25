@@ -12,3 +12,11 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>
 )
+
+// Oculta la pantalla de carga con una transición suave cuando la app ya está lista
+requestAnimationFrame(() => {
+  const splash = document.getElementById('splash')
+  if (!splash) return
+  splash.classList.add('fuera')
+  setTimeout(() => splash.remove(), 450)
+})

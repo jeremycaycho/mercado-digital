@@ -27,6 +27,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:wght@700;800&family=Permanent+Marker&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <!-- Pantalla de carga: se ve mientras se descarga la app (se quita en main.jsx) -->
+    <div id="splash" aria-hidden="true">
+      <div class="splash-etiqueta">S/</div>
+      <p class="splash-nombre">Mercado Digital</p>
+      <div class="splash-puntos"><span></span><span></span><span></span></div>
+    </div>
+    <style>
+      #splash { position: fixed; inset: 0; z-index: 9999; display: grid; place-content: center; justify-items: center; gap: 18px; background: #0E6B41; color: #fff; font-family: system-ui, sans-serif; transition: opacity .4s ease; }
+      #splash.fuera { opacity: 0; pointer-events: none; }
+      .splash-etiqueta { width: 120px; height: 84px; display: grid; place-items: center; background: #FFD84A; color: #16241C; font: 800 44px system-ui, sans-serif; border-radius: 6px; box-shadow: 7px 7px 0 #16241C; animation: splash-balanceo 1.4s ease-in-out infinite; }
+      .splash-nombre { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: .5px; }
+      .splash-puntos { display: flex; gap: 8px; }
+      .splash-puntos span { width: 9px; height: 9px; border-radius: 50%; background: #FFD84A; animation: splash-punto 1s ease-in-out infinite; }
+      .splash-puntos span:nth-child(2) { animation-delay: .15s; }
+      .splash-puntos span:nth-child(3) { animation-delay: .3s; }
+      @keyframes splash-balanceo { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(4deg) translateY(-4px); } }
+      @keyframes splash-punto { 0%, 100% { opacity: .3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-5px); } }
+      @media (prefers-reduced-motion: reduce) { .splash-etiqueta, .splash-puntos span { animation: none; } }
+    </style>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

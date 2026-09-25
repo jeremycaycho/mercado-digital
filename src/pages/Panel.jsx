@@ -9,6 +9,9 @@ import MiQR from '../components/MiQR'
 import CatalogoModal from '../components/CatalogoModal'
 import AbrirDia from '../components/AbrirDia'
 import TuSemana from '../components/TuSemana'
+import GuiaVendedor from '../components/GuiaVendedor'
+import MiCuenta from '../components/MiCuenta'
+import Esqueleto from '../components/Esqueleto'
 import InsigniaVerificado from '../components/InsigniaVerificado'
 import { useEsAdmin } from '../hooks/useEsAdmin'
 import CrearPuesto from '../components/CrearPuesto'
@@ -140,7 +143,7 @@ export default function Panel({ usuario }) {
 
   const salir = () => supabase.auth.signOut()
 
-  if (estado === 'cargando') return <main className="pagina"><p className="vacio">Cargando tu puesto…</p></main>
+  if (estado === 'cargando') return <main className="pagina"><Esqueleto filas={4} /></main>
 
   if (estado === 'error') {
     return (
@@ -200,7 +203,9 @@ export default function Panel({ usuario }) {
       </section>
 
       {editando ? (
+        <div id="editar-puesto" className="ancla">
         <EditarPuesto puesto={puesto} onGuardar={(cambios) => actualizarPuesto(cambios)} onCerrar={() => setEditando(false)} />
+        </div>
       ) : (
         <section className="perfil-resumen">
           <CapturaFoto
@@ -223,6 +228,17 @@ export default function Panel({ usuario }) {
           </div>
         </section>
       )}
+
+      <GuiaVendedor
+        puesto={puesto}
+        productos={productos}
+        onEditar={() => {
+          setEditando(true)
+          setTimeout(() => document.getElementById('editar-puesto')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+        }}
+        onCatalogo={() => setVerCatalogo(true)}
+        onQR={() => setVerQR(true)}
+      />
 
       <TuSemana puestoId={puesto.id} />
 
@@ -263,6 +279,8 @@ export default function Panel({ usuario }) {
           onCerrar={() => setVerCatalogo(false)}
         />
       )}
+
+      <MiCuenta usuario={usuario} puesto={puesto} productos={productos} />
 
       <Toast mensaje={toast} onCerrar={cerrarToast} />
     </main>

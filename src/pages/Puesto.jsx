@@ -5,6 +5,8 @@ import ProductoFila from '../components/ProductoFila'
 import MapaMercado from '../components/MapaMercado'
 import InsigniaVerificado from '../components/InsigniaVerificado'
 import { registrarEvento } from '../utils/estadisticas'
+import Esqueleto from '../components/Esqueleto'
+import ReportarPuesto from '../components/ReportarPuesto'
 import { ubicacion, linkWhatsApp, estadoDeHoy, tieneCoordenadas } from '../utils/formato'
 
 const ORDEN = { disponible: 0, pocos: 1, agotado: 2 }
@@ -30,7 +32,13 @@ export default function Puesto() {
   }, [id])
 
   if (carga === 'cargando') {
-    return <main className="pagina"><p className="vacio">Cargando puesto…</p></main>
+    return (
+      <main className="pagina">
+        <div className="esqueleto-bloque esqueleto-portada" aria-hidden="true" />
+        <Esqueleto filas={4} />
+        <p className="oculto" role="status">Cargando puesto…</p>
+      </main>
+    )
   }
 
   if (carga !== 'listo') {
@@ -123,6 +131,8 @@ export default function Puesto() {
         )}
         <Link to={`/plano?mercado=${puesto.mercado_id}`} className="enlace-plano">Ver todos los puestos en el mapa</Link>
       </section>
+
+      <ReportarPuesto puesto={puesto} />
 
       {wa && (
         <a className="btn-wa btn-wa-fijo" href={wa} target="_blank" rel="noreferrer" onClick={() => registrarEvento('whatsapp', puesto.id, puesto.owner_id)}>
